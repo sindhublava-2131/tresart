@@ -9,7 +9,7 @@
 - [ ] **AUTH-01**: User can sign up with email/password via Supabase
 - [ ] **AUTH-02**: User can sign in and maintain a secure session
 - [ ] **AUTH-03**: User session persists across browser refreshes
-- [ ] **AUTH-04**: Branded login/signup UI matching TresArt aesthetic
+- [x] **AUTH-04**: Branded login/signup UI matching TresArt aesthetic
 
 ### Discovery Feed
 - [ ] **FEED-01**: Fluid grid/list display of artistic tote bags
@@ -56,7 +56,7 @@
 | AUTH-01 | Phase 1 | Pending |
 | AUTH-02 | Phase 1 | Pending |
 | AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-04 | Phase 1 | Complete |
 | FEED-01 | Phase 2 | Pending |
 | FEED-02 | Phase 2 | Pending |
 | UIUX-01 | Phase 2 | Pending |

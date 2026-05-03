@@ -26,9 +26,9 @@ The journey from a blank canvas to a "no-compromise" luxury art platform. We sta
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01: Environment & Project Scaffolding
-- [ ] 01-02: Supabase Schema & Auth Integration
-- [ ] 01-03: Branded Auth UI Implementation
+- [x] 01-01: Environment & Project Scaffolding
+- [x] 01-02: Supabase Schema & Auth Integration
+- [x] 01-03: Branded Auth UI Implementation
 
 ### Phase 2: Gallery Discovery & Hero
 **Goal**: Create the stunning visual entrance and the discovery feed.
