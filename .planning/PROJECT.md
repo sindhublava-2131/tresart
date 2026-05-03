@@ -12,14 +12,13 @@ Deliver a "no-compromise" premium experience that fuses high-end art gallery aes
 
 ### Validated
 
-(None yet — ship to validate)
+- **Full-Stack Architecture**: Next.js + Supabase for premium performance and scalability (Validated in Phase 01)
+- **Bespoke User Auth**: Secure, branded login/signup for a personalized experience (Validated in Phase 01)
 
 ### Active
 
-- [ ] **Full-Stack Architecture**: Next.js + Supabase for premium performance and scalability
 - [ ] **Curated Discovery Feed**: A stunning, fluid grid of artistic tote bags with high-res imagery
 - [ ] **Interactive Artistry**: Micro-interactions for liking (heart emojis) with polished animations
-- [ ] **Bespoke User Auth**: Secure, branded login/signup for a personalized experience
 - [ ] **Premium Hero Experience**: Immersive, animated brand introduction ("Feel the Artistry")
 - [ ] **Artisan Shopping Cart**: A persistent, elegant cart system
 - [ ] **Secure Order Flow**: Seamless checkout with order tracking
@@ -47,8 +46,9 @@ Deliver a "no-compromise" premium experience that fuses high-end art gallery aes
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Next.js + Supabase | Chosen for "no-compromise" performance and rapid full-stack deployment of social features. | — Pending |
+| Next.js + Supabase | Chosen for "no-compromise" performance and rapid full-stack deployment of social features. | **Implemented** in Phase 01 |
 | Interaction Focus | Prioritizing high-quality heart animations to make the site feel "alive" and interactive. | — Pending |
+| Branded Auth Layout | Split-screen gallery aesthetic to maintain brand premium feel from first login. | **Implemented** in Phase 01 |
 
 ## Evolution
 
@@ -68,4 +68,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-26 after refinement*
+*Last updated: 2026-05-03 after Phase 01 completion*
