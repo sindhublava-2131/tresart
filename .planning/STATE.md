@@ -70,7 +70,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-1. **Create project README file** (docs) — 2026-05-04
+None yet.
 
 ### Blockers/Concerns
 
