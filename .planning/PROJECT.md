@@ -1,71 +1,46 @@
-# TresArt (Premium Full-Stack)
+# Project: TresArt (Minimal & Aesthetic Art E-commerce)
 
-## What This Is
+## Context
 
-A bespoke, full-stack art-centric platform for "TresArt", designed to showcase handmade painted tote bags. The application features a curated discovery feed where users can interact with pieces through artistic heart animations, manage a persistent shopping experience, and join a premium community of art lovers.
+TresArt is a handmade art brand focused on selling hand-painted products, specifically starting with tote bags. The brand is designed to be creative and aesthetic, moving away from a standard "tech" feel toward a minimal, elegant gallery experience.
+
+**Target Audience:** Young users who value artistry, customization, and premium minimalist design.
 
 ## Core Value
 
-Deliver a "no-compromise" premium experience that fuses high-end art gallery aesthetics with modern social interactivity (likes/engagement).
+Deliver a high-end, artistic shopping experience that makes hand-painted products feel like collectible art pieces, using a modern and responsive MERN stack (React, Express, MongoDB).
 
 ## Requirements
 
 ### Validated
-
-- **Full-Stack Architecture**: Next.js + Supabase for premium performance and scalability (Validated in Phase 01)
-- **Bespoke User Auth**: Secure, branded login/signup for a personalized experience (Validated in Phase 01)
+(None — starting fresh)
 
 ### Active
-
-- [ ] **Curated Discovery Feed**: A stunning, fluid grid of artistic tote bags with high-res imagery
-- [ ] **Interactive Artistry**: Micro-interactions for liking (heart emojis) with polished animations
-- [ ] **Premium Hero Experience**: Immersive, animated brand introduction ("Feel the Artistry")
-- [ ] **Artisan Shopping Cart**: A persistent, elegant cart system
-- [ ] **Secure Order Flow**: Seamless checkout with order tracking
-- [ ] **Luxury Aesthetic**: Minimalist design using deep blacks, clean whites, and soft artistic accents
-- [ ] **Performance First**: Zero-compromise load times and interaction responsiveness
+- **BRAND-01**: "Feel the Artistry" brand identity and tagline integration.
+- **UIUX-01**: Minimal, elegant, and aesthetic UI design system.
+- **UIUX-02**: Fully responsive layouts for mobile and desktop.
+- **FEAT-01**: Branded Homepage with Hero section and logo.
+- **FEAT-02**: Product Grid showcasing at least 3 sample tote bags.
+- **ARCH-01**: Clear separation between `/client` (React) and `/server` (Express).
+- **DATA-01**: MongoDB persistence for product data.
+- **API-01**: Express API for fetching products (`GET /products`).
 
 ### Out of Scope
-
-- [ ] Generic social features (Comments, Shares) — Focus on the "Art-First" interaction
-- [ ] Third-party marketplace — TresArt brand only
-- [ ] Mobile App — Focus on a "no-compromise" web experience first
-
-## Context
-
-- "No compromise" is the guiding principle for both design and technical implementation.
-- The platform should feel more like a luxury digital gallery than a standard social network.
-- Interactivity (hearts) should feel rewarding and artistic, not just functional.
-
-## Constraints
-
-- **Tech Stack**: Next.js, Tailwind CSS, Supabase — For a modern, high-performance foundation.
-- **Aesthetics**: Luxury, Minimal, Modern.
+- **AUTH**: User authentication (Login/Signup) is explicitly excluded from the initial phase.
+- **COMM**: Shopping cart and checkout are not part of Phase 1.
+- **CMS**: Admin dashboard for product management is deferred.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Next.js + Supabase | Chosen for "no-compromise" performance and rapid full-stack deployment of social features. | **Implemented** in Phase 01 |
-| Interaction Focus | Prioritizing high-quality heart animations to make the site feel "alive" and interactive. | — Pending |
-| Branded Auth Layout | Split-screen gallery aesthetic to maintain brand premium feel from first login. | **Implemented** in Phase 01 |
+| **React (no Next.js)** | User preference for a standard SPA architecture. | — Confirmed |
+| **Separate Client/Server** | Clean architectural separation between frontend and API logic. | — Confirmed |
+| **MongoDB (Direct)** | No Supabase or paid services as per user constraint. | — Confirmed |
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
-**After each phase transition** (via `/gsd-transition`):
-1. Requirements invalidated? → Move to Out of Scope with reason
-2. Requirements validated? → Move to Validated with phase reference
-3. New requirements emerged? → Add to Active
-4. Decisions to log? → Add to Key Decisions
-5. "What This Is" still accurate? → Update if drifted
-
-**After each milestone** (via `/gsd-complete-milestone`):
-1. Full review of all sections
-2. Core Value check — still the right priority?
-3. Audit Out of Scope — reasons still valid?
-4. Update Context with current state
-
 ---
-*Last updated: 2026-05-03 after Phase 01 completion*
+*Last updated: 2026-05-05 after total project reset*
