@@ -3,8 +3,11 @@
 ## 1. Functional Requirements
 
 ### Homepage (Phase 1)
-- **REQ-01**: Immersive Hero section with "TresArt" logo and "Feel the Artistry" tagline.
-- **REQ-02**: Product Grid displaying at least 3 sample tote bags.
+- **FEAT-01**: Branded Homepage with Hero section and logo.
+- **FEAT-02**: Product Grid showcasing at least 3 sample tote bags.
+- **EXP-01**: "Slikkk" style entry animation with soft-spring physics.
+- **EXP-02**: Immersive audio chime on entrance (requires user interaction).
+- **LOGO-01**: Styled SVG logo with path-drawing animation.
 - **REQ-03**: Navigation bar with links to "Home", "Gallery", and "About".
 - **REQ-04**: Responsive design for mobile, tablet, and desktop views.
 
@@ -13,6 +16,12 @@
 - **REQ-06**: MongoDB connection established using Mongoose.
 - **REQ-07**: Product Schema with fields: `name`, `price`, `description`, `image`.
 - **REQ-08**: API endpoint `GET /api/products` returning sample data from MongoDB.
+
+### Entrance & Audio (Milestone 2)
+- **REQ-09**: Minimalist "Entrance Screen" with "Enter Gallery" trigger.
+- **REQ-10**: SVG logo with animated path reveal (`stroke-dasharray`).
+- **REQ-11**: Luxury ambient soundscape triggered on entrance.
+- **REQ-12**: Staggered "soft spring" reveal of all homepage elements.
 
 ## 2. Non-Functional Requirements
 
