@@ -1,46 +1,37 @@
-# Project: TresArt (Minimal & Aesthetic Art E-commerce)
+# TresArt
 
-## Context
-
-TresArt is a handmade art brand focused on selling hand-painted products, specifically starting with tote bags. The brand is designed to be creative and aesthetic, moving away from a standard "tech" feel toward a minimal, elegant gallery experience.
-
-**Target Audience:** Young users who value artistry, customization, and premium minimalist design.
+## What This Is
+TresArt is an art e-commerce and portfolio platform featuring high-end visuals and an artistic user experience.
 
 ## Core Value
+Providing a premium, gallery-like experience for viewing and purchasing artwork with smooth animations and dynamic branding.
 
-Deliver a high-end, artistic shopping experience that makes hand-painted products feel like collectible art pieces, using a modern and responsive MERN stack (React, Express, MongoDB).
+## Current Milestone: v1.0 User Accounts & Commerce Foundation
 
-## Requirements
+**Goal:** Establish user accounts, profile management, and personalization features with a MongoDB backend.
 
-### Validated
-(None — starting fresh)
+**Target features:**
+- MongoDB Backend Integration & User Authentication (Login, Logout)
+- User Profile Management (Details, Edit Profile)
+- Personalization & E-commerce (Add to Cart, Wishlist, Purchase History)
+- UI Enhancements (Dark/Light Mode toggle)
 
-### Active
-- **BRAND-01**: "Feel the Artistry" brand identity and tagline integration.
-- **UIUX-01**: Minimal, elegant, and aesthetic UI design system.
-- **UIUX-02**: Fully responsive layouts for mobile and desktop.
-- **FEAT-01**: Branded Homepage with Hero section and logo.
-- **FEAT-02**: Product Grid showcasing at least 3 sample tote bags.
-- **ARCH-01**: Clear separation between `/client` (React) and `/server` (Express).
-- **DATA-01**: MongoDB persistence for product data.
-- **API-01**: Express API for fetching products (`GET /products`).
-
-### Out of Scope
-- **AUTH**: User authentication (Login/Signup) is explicitly excluded from the initial phase.
-- **COMM**: Shopping cart and checkout are not part of Phase 1.
-- **CMS**: Admin dashboard for product management is deferred.
-
-## Key Decisions
-
-| Decision | Rationale | Outcome |
-|----------|-----------|---------|
-| **React (no Next.js)** | User preference for a standard SPA architecture. | — Confirmed |
-| **Separate Client/Server** | Clean architectural separation between frontend and API logic. | — Confirmed |
-| **MongoDB (Direct)** | No Supabase or paid services as per user constraint. | — Confirmed |
+## Active Requirements
+(To be defined)
 
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
 
----
-*Last updated: 2026-05-05 after total project reset*
+**After each phase transition** (via `/gsd-transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd-complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
