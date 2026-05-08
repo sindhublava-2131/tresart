@@ -1,41 +1,32 @@
-# Requirements: TresArt (Minimal Art E-commerce)
+# Milestone v1.0 Requirements
 
-## 1. Functional Requirements
+## Active Requirements
 
-### Homepage (Phase 1)
-- **FEAT-01**: Branded Homepage with Hero section and logo.
-- **FEAT-02**: Product Grid showcasing at least 3 sample tote bags.
-- **EXP-01**: "Slikkk" style entry animation with soft-spring physics.
-- **EXP-02**: Immersive audio chime on entrance (requires user interaction).
-- **LOGO-01**: Styled SVG logo with path-drawing animation.
-- **REQ-03**: Navigation bar with links to "Home", "Gallery", and "About".
-- **REQ-04**: Responsive design for mobile, tablet, and desktop views.
+### Authentication
+- [ ] **AUTH-01**: User can register an account with email and password.
+- [ ] **AUTH-02**: User can log in and receive a secure HTTP-only session cookie.
+- [ ] **AUTH-03**: User can log out and clear their session.
 
-### Backend (Phase 1)
-- **REQ-05**: Express.js server initialized and listening on a configurable port.
-- **REQ-06**: MongoDB connection established using Mongoose.
-- **REQ-07**: Product Schema with fields: `name`, `price`, `description`, `image`.
-- **REQ-08**: API endpoint `GET /api/products` returning sample data from MongoDB.
+### Profile Management
+- [ ] **PROF-01**: User can view their profile details.
+- [ ] **PROF-02**: User can edit their profile information.
 
-### Entrance & Audio (Milestone 2)
-- **REQ-09**: Minimalist "Entrance Screen" with "Enter Gallery" trigger.
-- **REQ-10**: SVG logo with animated path reveal (`stroke-dasharray`).
-- **REQ-11**: Luxury ambient soundscape triggered on entrance.
-- **REQ-12**: Staggered "soft spring" reveal of all homepage elements.
+### Commerce
+- [ ] **SHOP-01**: User can add/remove items to their Cart.
+- [ ] **SHOP-02**: User can add/remove items to their Wishlist.
+- [ ] **SHOP-03**: User can view their purchase history.
 
-## 2. Non-Functional Requirements
+### Theming
+- [ ] **UI-01**: User can toggle between Dark Mode and Light Mode, and preference persists.
 
-### Aesthetic & UI (Luxury Gallery)
-- **UIUX-01**: Minimalist design with generous whitespace and high-end typography.
-- **UIUX-02**: Micro-animations for page elements (using Framer Motion).
-- **UIUX-03**: Zero layout shift (CLS) for a premium feel.
+## Future Requirements
+- Password reset via email flow.
+- Guest cart merging upon login.
+- Real payment gateway integration (Stripe/PayPal).
 
-### Code Quality
-- **ARCH-01**: Strict separation between `/client` and `/server`.
-- **CODE-01**: Clean, beginner-friendly code with helpful comments.
-- **PERF-01**: Fast load times for high-res images using standard optimization.
+## Out of Scope
+- Third-party OAuth (Google/Facebook) — focused on email/password for v1.0.
+- Complex inventory management or admin dashboard — focused on the buyer experience for v1.0.
 
-## 3. Success Criteria
-1. The user can see a beautiful, responsive homepage.
-2. The product data is fetched from the Express API/MongoDB.
-3. The project structure is clean and organized into `/client` and `/server`.
+## Traceability
+(To be updated by roadmap)
