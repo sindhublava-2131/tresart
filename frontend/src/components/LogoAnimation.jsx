@@ -35,9 +35,14 @@ const LogoAnimation = ({ onComplete }) => {
         className="relative z-10 w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex items-center justify-center"
       >
         <img 
-          src="/logo_new.png" 
-          alt="TresArt Premium Logo" 
-          className="w-full h-full object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.15)]"
+          src="/logo.jpg" 
+          alt="TresArt Logo" 
+          className="w-full h-full object-contain"
+          style={{ 
+            filter: 'invert(1) hue-rotate(180deg) brightness(1.2)',
+            mixBlendMode: 'screen',
+            clipPath: 'inset(0% 0% 25% 0%)' // Crop text at bottom if needed
+          }}
           draggable={false}
         />
       </motion.div>
