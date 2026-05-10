@@ -17,27 +17,34 @@ const Logo = ({ onClick }) => {
       >
         <motion.text
           x="0"
-          y="32"
-          fill="currentColor"
-          fontSize="36"
-          fontWeight="900"
-          fontFamily="system-ui, sans-serif"
-          letterSpacing="-0.05em"
-          className="text-[var(--color-text-primary)] uppercase italic"
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.8 }}
+          y="30"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="0.5"
+          fontSize="32"
+          fontFamily="'Playfair Display', serif"
+          letterSpacing="0.2em"
+          className="text-[var(--color-text-primary)]"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 1 }}
+          transition={{ 
+            duration: 2.5, 
+            ease: "easeInOut",
+            pathLength: { duration: 2, ease: "easeInOut" },
+            opacity: { duration: 1, delay: 0.5 }
+          }}
         >
-          TresArt
+          TRESART
         </motion.text>
         
         <motion.path
-          d="M0 38H160"
-          stroke="var(--color-accent)"
-          strokeWidth="4"
-          initial={{ scaleX: 0 }}
-          animate={{ scaleX: 1 }}
-          transition={{ duration: 1, delay: 0.5 }}
+          d="M0 38H180"
+          stroke="currentColor"
+          strokeWidth="0.5"
+          className="text-[var(--color-text-primary)]"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.2 }}
+          transition={{ duration: 1.5, delay: 2 }}
         />
       </svg>
     </motion.div>

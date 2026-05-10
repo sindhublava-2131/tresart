@@ -14,19 +14,6 @@ import { motion } from 'framer-motion';
 const LogoAnimation = ({ onComplete }) => {
   return (
     <div className="relative flex items-center justify-center w-full h-full overflow-hidden">
-      {/* SVG Filter Definition (Hidden) */}
-      <svg width="0" height="0" className="absolute">
-        <filter id="remove-white" colorInterpolationFilters="sRGB">
-          <feColorMatrix 
-            type="matrix" 
-            values="1 0 0 0 0
-                    0 1 0 0 0
-                    0 0 1 0 0
-                    -1.5 -1.5 -1.5 1 1.2" 
-          />
-        </filter>
-      </svg>
-
       {/* Ripple Effect */}
       <motion.div
         className="absolute rounded-full"
@@ -48,13 +35,9 @@ const LogoAnimation = ({ onComplete }) => {
         className="relative z-10 w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex items-center justify-center"
       >
         <img 
-          src="/logo.jpg" 
-          alt="TresArt Logo" 
-          className="w-full h-auto select-none"
-          style={{ 
-            filter: 'url(#remove-white)',
-            clipPath: 'inset(0% 0% 25% 0%)' // Crop text at bottom
-          }}
+          src="/logo_new.png" 
+          alt="TresArt Premium Logo" 
+          className="w-full h-full object-contain drop-shadow-[0_0_25px_rgba(255,255,255,0.15)]"
           draggable={false}
         />
       </motion.div>

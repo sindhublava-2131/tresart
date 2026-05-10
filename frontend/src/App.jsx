@@ -3,7 +3,6 @@ import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
 import useSound from 'use-sound';
 import Navbar from './components/Navbar';
-import Hero from './components/Hero';
 import ProductCard from './components/ProductCard';
 import EntranceScreen from './components/EntranceScreen';
 import AuthModal from './components/AuthModal';
@@ -122,10 +121,6 @@ function App() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              <motion.div variants={childVariants}>
-                <Hero />
-              </motion.div>
-              
               <motion.main variants={childVariants} className="max-w-7xl mx-auto px-8 py-32 pb-48">
                 {loading ? (
                   <div className="flex flex-col items-center justify-center py-40 gap-6">
@@ -144,7 +139,7 @@ function App() {
           )}
         </AnimatePresence>
 
-        <footer className="py-32 border-t-[var(--border-width)] border-[var(--color-border)] bg-[var(--color-secondary)] transition-colors duration-500">
+        <footer className="py-32 border-t border-[var(--color-border)] bg-[var(--color-border)]/5 transition-colors duration-500">
           <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-8">
             <div className="text-[10px] uppercase tracking-[0.5em] text-[var(--color-text-primary)]/20">
               TresArt © 2025 • All Rights Reserved
