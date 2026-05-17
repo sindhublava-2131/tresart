@@ -29,9 +29,17 @@ const AuthModal = ({ isOpen, onClose }) => {
     setLoading(true);
     setError('');
 
+    // Clean inputs to strip out mobile auto-completed trailing spaces
+    const cleanEmail = (formData.email || '').trim();
+    const cleanPhone = (formData.phone || '').trim();
+    const cleanName = (formData.name || '').trim();
+    const cleanStreet = (formData.street || '').trim();
+    const cleanLandmark = (formData.landmark || '').trim();
+    const cleanPincode = (formData.pincode || '').trim();
+
     if (!isLogin) {
       // Validate email (must be @gmail.com)
-      if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
+      if (!cleanEmail.toLowerCase().endsWith('@gmail.com')) {
         setError('Only @gmail.com email addresses are accepted.');
         setLoading(false);
         return;
@@ -39,14 +47,14 @@ const AuthModal = ({ isOpen, onClose }) => {
 
       // Validate phone number (exactly 10 digits)
       const phoneRegex = /^[0-9]{10}$/;
-      if (!phoneRegex.test(formData.phone)) {
+      if (!phoneRegex.test(cleanPhone)) {
         setError('Phone number must be exactly 10 digits.');
         setLoading(false);
         return;
       }
 
       // Validate address fields
-      if (!formData.street || !formData.city || !formData.state) {
+      if (!cleanStreet || !formData.city || !formData.state) {
         setError('Street, City, and State are required.');
         setLoading(false);
         return;
@@ -54,7 +62,7 @@ const AuthModal = ({ isOpen, onClose }) => {
 
       // Validate 6-digit pincode
       const pincodeRegex = /^[0-9]{6}$/;
-      if (!pincodeRegex.test(formData.pincode)) {
+      if (!pincodeRegex.test(cleanPincode)) {
         setError('Pincode must be exactly 6 digits.');
         setLoading(false);
         return;
@@ -63,20 +71,29 @@ const AuthModal = ({ isOpen, onClose }) => {
 
     let result;
     if (isLogin) {
-      result = await login(formData.email, formData.password);
+      result = await login(cleanEmail, formData.password);
     } else {
       // Prepare registration data (use otherCity if selected)
-      const { otherCity, ...registrationData } = {
-        ...formData,
-        city: formData.city === 'Other' ? formData.otherCity : formData.city
-      };
+      const finalCity = formData.city === 'Other' ? (formData.otherCity || '').trim() : formData.city;
       
-      if (formData.city === 'Other' && !formData.otherCity) {
+      if (formData.city === 'Other' && !finalCity) {
         setError('Please specify your city name.');
         setLoading(false);
         return;
       }
 
+      const registrationData = {
+        name: cleanName,
+        email: cleanEmail,
+        phone: cleanPhone,
+        street: cleanStreet,
+        landmark: cleanLandmark,
+        city: finalCity,
+        state: formData.state,
+        pincode: cleanPincode,
+        password: formData.password
+      };
+      
       result = await register(registrationData);
     }
 
@@ -160,11 +177,14 @@ const AuthModal = ({ isOpen, onClose }) => {
               )}
               
               <div className="space-y-1">
-                <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Email</label>
+                <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">
+                  {isLogin ? 'Email or Phone Number' : 'Email'}
+                </label>
                 <input 
-                  type="email" 
+                  type="text" 
                   required
-                  className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
+                  placeholder={isLogin ? 'yourname@gmail.com or 10-digit phone' : 'yourname@gmail.com'}
+                  className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm placeholder-[var(--color-text-primary)]/20"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />

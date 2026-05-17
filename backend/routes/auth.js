@@ -9,7 +9,24 @@ const router = express.Router();
 router.post('/register', async (req, res) => {
   try {
     const { name, email, password, phone, street, landmark, city, state, pincode, nationality } = req.body;
-    const user = new User({ name, email, password, phone, street, landmark, city, state, pincode, nationality });
+    
+    // Clean and normalize identifiers to prevent mobile spacing bugs
+    const cleanEmail = (email || '').trim().toLowerCase();
+    const cleanPhone = (phone || '').trim();
+    const cleanName = (name || '').trim();
+
+    const user = new User({ 
+      name: cleanName, 
+      email: cleanEmail, 
+      password, 
+      phone: cleanPhone, 
+      street, 
+      landmark, 
+      city, 
+      state, 
+      pincode, 
+      nationality 
+    });
     await user.save();
     
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET || 'tresart_secret_key');
@@ -24,7 +41,17 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email });
+    
+    // Trim spaces which are common on mobile keyboards
+    const cleanIdentifier = (email || '').trim();
+    
+    // Allow login with either email or phone
+    const user = await User.findOne({
+      $or: [
+        { email: cleanIdentifier.toLowerCase() },
+        { phone: cleanIdentifier }
+      ]
+    });
     
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).send({ error: 'Invalid login credentials' });

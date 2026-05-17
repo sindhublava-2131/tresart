@@ -24,32 +24,32 @@ const About = () => {
   };
 
   return (
-    <section id="About" className="py-32 relative overflow-hidden bg-[var(--color-bg-primary)]">
+    <section id="About" className="py-16 md:py-32 relative overflow-hidden bg-[var(--color-bg-primary)]">
       {/* Aesthetic Background Elements */}
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-red-100/10 dark:bg-red-900/5 rounded-full blur-[120px] -z-10" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-100/10 dark:bg-purple-900/5 rounded-full blur-[100px] -z-10" />
+      <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-red-100/10 dark:bg-red-900/5 rounded-full blur-[80px] md:blur-[120px] -z-10" />
+      <div className="absolute bottom-0 left-0 w-[200px] md:w-[400px] h-[200px] md:h-[400px] bg-purple-100/10 dark:bg-purple-900/5 rounded-full blur-[60px] md:blur-[100px] -z-10" />
 
-      <div className="max-w-5xl mx-auto px-8">
+      <div className="max-w-5xl mx-auto px-6 md:px-8">
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-12 gap-16 items-start"
+          className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start"
         >
           {/* Title Section */}
-          <div className="md:col-span-4 sticky top-32">
-            <motion.p variants={itemVariants} className="text-[10px] uppercase tracking-[0.5em] text-[var(--color-accent)] font-bold mb-4">
+          <div className="md:col-span-4 md:sticky md:top-32">
+            <motion.p variants={itemVariants} className="text-[10px] uppercase tracking-[0.5em] text-[var(--color-accent)] font-bold mb-3 md:mb-4">
               Our Story
             </motion.p>
-            <motion.h2 variants={itemVariants} className="text-5xl md:text-6xl font-serif leading-tight">
+            <motion.h2 variants={itemVariants} className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif leading-tight">
               Art Beyond <br /> <span className="italic">The Canvas</span>
             </motion.h2>
           </div>
 
           {/* Content Section */}
-          <div className="md:col-span-8 space-y-12 text-[var(--color-text-primary)]/80 leading-relaxed text-lg font-light">
-            <motion.div variants={itemVariants} className="space-y-6">
+          <div className="md:col-span-8 space-y-8 md:space-y-12 text-[var(--color-text-primary)]/80 leading-relaxed text-base md:text-lg font-light">
+            <motion.div variants={itemVariants} className="space-y-4 md:space-y-6">
               <p>
                 <span className="text-[var(--color-text-primary)] font-medium">TresArt</span> is a handmade art brand built from creativity, passion, and the love for personalized art. What started as a simple idea of turning everyday accessories into meaningful artistic pieces slowly became a space where emotions, memories, aesthetics, and creativity come together.
               </p>
@@ -58,9 +58,7 @@ const About = () => {
               </p>
             </motion.div>
 
-
-
-            <motion.div variants={itemVariants} className="space-y-6">
+            <motion.div variants={itemVariants} className="space-y-4 md:space-y-6">
               <p>
                 Our collections are inspired by different styles and emotions. Whether it’s a cute pouch, a custom tote bag, or a heartfelt gift set for someone special, every creation is designed to tell a story.
               </p>
@@ -69,18 +67,18 @@ const About = () => {
               </p>
             </motion.div>
 
-            <motion.div variants={itemVariants} className="pt-12 border-t border-[var(--color-border)]/10">
-              <p className="italic text-xl font-serif text-[var(--color-text-primary)] mb-12">
+            <motion.div variants={itemVariants} className="pt-8 md:pt-12 border-t border-[var(--color-border)]/10">
+              <p className="italic text-lg md:text-xl font-serif text-[var(--color-text-primary)] mb-8 md:mb-12">
                 "TresArt is more than just a brand — it’s a creative space where art becomes personal, emotional, and expressive. Our goal is to make products that not only look aesthetic but also create a connection with the person using them."
               </p>
               
-              <div className="flex flex-col md:flex-row gap-12 items-center justify-between py-8 px-12 bg-[var(--color-border)]/5 rounded-2xl border border-[var(--color-border)]/10">
-                <div className="text-center md:text-left">
-                  <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--color-accent)] mb-2">
+              <div className="flex flex-col md:flex-row gap-6 md:gap-12 items-center justify-between py-6 md:py-8 px-6 md:px-12 bg-[var(--color-border)]/5 rounded-2xl border border-[var(--color-border)]/10">
+                <div className="text-center md:text-left space-y-2">
+                  <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--color-accent)]">
                     <Sparkles size={14} />
                     <p className="text-[10px] uppercase tracking-[0.3em] font-bold">Designed by imagination</p>
                   </div>
-                  <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--color-accent)] mb-2">
+                  <div className="flex items-center justify-center md:justify-start gap-2 text-[var(--color-accent)]">
                     <Palette size={14} />
                     <p className="text-[10px] uppercase tracking-[0.3em] font-bold">Painted by hand</p>
                   </div>
@@ -89,7 +87,7 @@ const About = () => {
                     <p className="text-[10px] uppercase tracking-[0.3em] font-bold">Made especially for you</p>
                   </div>
                 </div>
-                <p className="text-2xl font-serif italic text-[var(--color-text-primary)]">Feel the artistry.</p>
+                <p className="text-xl md:text-2xl font-serif italic text-[var(--color-text-primary)] text-center md:text-right">Feel the artistry.</p>
               </div>
             </motion.div>
           </div>
