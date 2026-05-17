@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImagePlus, MessageCircle, Sparkles, Briefcase, Box, Gift } from 'lucide-react';
+import { ImagePlus, MessageCircle, Sparkles, Briefcase, Box, Gift, X } from 'lucide-react';
 
 const Customizer = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // 'tote', 'pouch', 'giftset'
@@ -8,6 +8,10 @@ const Customizer = () => {
   const [customText, setCustomText] = useState('');
   const [instructions, setInstructions] = useState('');
   const [giftFor, setGiftFor] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]); // array of { file, previewUrl }
+  const [uploadError, setUploadError] = useState('');
+
+  const fileInputRef = useRef(null);
 
   const themes = ['Floral', 'Anime', 'Minimal', 'Cute', 'Other'];
   const giftItems = ['Tote Bag', 'Pouch', 'Keychain', 'Letter Card', 'Extra Gift'];
@@ -22,7 +26,48 @@ const Customizer = () => {
       setCustomText('');
       setInstructions('');
       setGiftFor('');
+      // Revoke and clear file previews
+      uploadedFiles.forEach(f => URL.revokeObjectURL(f.previewUrl));
+      setUploadedFiles([]);
+      setUploadError('');
     }
+  };
+
+  const handleFileChange = (e) => {
+    setUploadError('');
+    const files = Array.from(e.target.files || []);
+    const validFiles = [];
+
+    for (const file of files) {
+      // Validate file type (image only)
+      if (!file.type.startsWith('image/')) {
+        setUploadError('Only image files (JPEG, PNG, etc.) are allowed.');
+        continue;
+      }
+      // Validate size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        setUploadError('Images must be smaller than 5MB.');
+        continue;
+      }
+      validFiles.push({
+        file,
+        previewUrl: URL.createObjectURL(file)
+      });
+    }
+
+    if (validFiles.length > 0) {
+      setUploadedFiles(prev => [...prev, ...validFiles]);
+    }
+  };
+
+  const removeFile = (indexToRemove) => {
+    setUploadedFiles(prev => {
+      const target = prev[indexToRemove];
+      if (target) {
+        URL.revokeObjectURL(target.previewUrl);
+      }
+      return prev.filter((_, idx) => idx !== indexToRemove);
+    });
   };
 
   const toggleGiftItem = (item) => {
@@ -39,6 +84,9 @@ const Customizer = () => {
     if (selectedProduct === 'tote' || selectedProduct === 'pouch') {
       if (selectedTheme) message += `*Theme:* ${selectedTheme}\n`;
       if (customText) message += `*Custom Text:* ${customText}\n`;
+      if (uploadedFiles.length > 0) {
+        message += `*Reference Images:* ${uploadedFiles.length} selected (I will send them in this chat next)\n`;
+      }
     } else if (selectedProduct === 'giftset') {
       message += `*Included Items:* ${giftItems.join(', ')}\n`;
       if (giftFor) message += `*Gift For:* ${giftFor}\n`;
@@ -165,13 +213,79 @@ const Customizer = () => {
                     <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-primary)]/70 mb-4">
                       2. Inspiration (Optional)
                     </h4>
-                    <div className="border-2 border-dashed border-[var(--color-border)]/20 rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-colors group">
-                      <div className="w-12 h-12 rounded-full bg-[var(--color-border)]/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      multiple
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="hidden"
+                    />
+                    <div 
+                      onClick={() => fileInputRef.current?.click()}
+                      className="border-2 border-dashed border-[var(--color-border)]/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-all duration-300 group"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-[var(--color-border)]/10 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:bg-[var(--color-accent)]/10 transition-all duration-300">
                         <ImagePlus size={20} className="text-[var(--color-text-primary)]/60 group-hover:text-[var(--color-accent)]" />
                       </div>
-                      <p className="text-sm font-medium text-[var(--color-text-primary)]/80">Click to upload reference images</p>
+                      <p className="text-sm font-semibold text-[var(--color-text-primary)]/80 group-hover:text-[var(--color-text-primary)] transition-colors">Click to upload reference images</p>
                       <p className="text-xs text-[var(--color-text-primary)]/40 mt-1">JPEG, PNG up to 5MB</p>
                     </div>
+
+                    {uploadError && (
+                      <p className="text-xs font-medium text-red-500 mt-2 text-center animate-pulse">{uploadError}</p>
+                    )}
+
+                    {/* Uploaded Images Preview Grid */}
+                    <AnimatePresence>
+                      {uploadedFiles.length > 0 && (
+                        <div className="mt-6 space-y-3">
+                          <div className="flex justify-between items-center">
+                            <p className="text-xs font-semibold uppercase tracking-wider text-[var(--color-accent)]">
+                              ✓ Selected Reference Images ({uploadedFiles.length})
+                            </p>
+                            <button
+                              onClick={() => {
+                                uploadedFiles.forEach(f => URL.revokeObjectURL(f.previewUrl));
+                                setUploadedFiles([]);
+                              }}
+                              className="text-[10px] uppercase font-bold tracking-wider text-red-400 hover:text-red-500 transition-colors"
+                            >
+                              Clear All
+                            </button>
+                          </div>
+                          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                            {uploadedFiles.map((fileObj, idx) => (
+                              <motion.div
+                                key={fileObj.previewUrl}
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                exit={{ opacity: 0, scale: 0.8 }}
+                                className="relative aspect-square rounded-xl overflow-hidden border border-[var(--color-border)]/20 shadow-md group"
+                              >
+                                <img
+                                  src={fileObj.previewUrl}
+                                  alt="preview"
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                />
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeFile(idx);
+                                  }}
+                                  className="absolute top-1 right-1 p-1 bg-black/60 hover:bg-black/80 rounded-full text-white/90 hover:text-white transition-colors shadow-sm"
+                                >
+                                  <X size={12} />
+                                </button>
+                              </motion.div>
+                            ))}
+                          </div>
+                          <p className="text-[10px] text-[var(--color-text-primary)]/40 italic">
+                            These reference files will be specified in your WhatsApp design order!
+                          </p>
+                        </div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               )}
