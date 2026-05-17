@@ -1,7 +1,7 @@
 [build]
   base    = "frontend"        # Netlify installs deps & runs build from here
   command = "npm run build"   # Vite build command
-  publish = "frontend/dist"   # Output folder to deploy
+  publish = "dist"            # Output folder (relative to base directory)
 
 [build.environment]
   NODE_VERSION = "20"
