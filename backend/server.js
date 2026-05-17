@@ -23,7 +23,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/products', productRoutes);
 
 app.get('/', (req, res) => {
-  res.send('TresArt API is running... ✨');
+  res.send('TresArt API is running... ✨ (v1.0.2 - Phone login enabled)');
 });
 
 // Connect to MongoDB
