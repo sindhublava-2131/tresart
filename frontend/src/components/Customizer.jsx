@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ImagePlus, MessageCircle, Sparkles, Briefcase, Box, Gift } from 'lucide-react';
+import { MessageCircle, Sparkles, Briefcase, Box, Gift } from 'lucide-react';
 
 const Customizer = () => {
   const [selectedProduct, setSelectedProduct] = useState(null); // 'tote', 'pouch', 'giftset'
@@ -157,20 +157,6 @@ const Customizer = () => {
                           {theme}
                         </button>
                       ))}
-                    </div>
-                  </div>
-
-                  {/* Image Upload Area */}
-                  <div>
-                    <h4 className="text-sm font-bold uppercase tracking-wider text-[var(--color-text-primary)]/70 mb-4">
-                      2. Inspiration (Optional)
-                    </h4>
-                    <div className="border-2 border-dashed border-[var(--color-border)]/20 rounded-xl p-8 flex flex-col items-center justify-center text-center cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-accent)]/5 transition-colors group">
-                      <div className="w-12 h-12 rounded-full bg-[var(--color-border)]/10 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
-                        <ImagePlus size={20} className="text-[var(--color-text-primary)]/60 group-hover:text-[var(--color-accent)]" />
-                      </div>
-                      <p className="text-sm font-medium text-[var(--color-text-primary)]/80">Click to upload reference images</p>
-                      <p className="text-xs text-[var(--color-text-primary)]/40 mt-1">JPEG, PNG up to 5MB</p>
                     </div>
                   </div>
                 </div>
