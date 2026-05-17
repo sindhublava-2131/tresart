@@ -12,8 +12,12 @@ router.post('/register', async (req, res) => {
     
     // Clean and normalize identifiers to prevent mobile spacing bugs
     const cleanEmail = (email || '').trim().toLowerCase();
-    const cleanPhone = (phone || '').trim();
     const cleanName = (name || '').trim();
+    
+    // Normalize phone number to standard 10-digit format
+    const rawPhone = (phone || '').trim();
+    const digitsOnly = rawPhone.replace(/\D/g, '');
+    const cleanPhone = digitsOnly.length >= 10 ? digitsOnly.slice(-10) : digitsOnly;
 
     const user = new User({ 
       name: cleanName, 
@@ -42,15 +46,26 @@ router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
     
-    // Trim spaces which are common on mobile keyboards
+    // Clean identifiers to strip out mobile keyboard spacing bugs
     const cleanIdentifier = (email || '').trim();
     
-    // Allow login with either email or phone
+    // Allow login with either email or phone (supporting multiple phone formats)
+    const searchConditions = [
+      { email: cleanIdentifier.toLowerCase() },
+      { phone: cleanIdentifier }
+    ];
+    
+    // If input is or ends with a phone number, extract its last 10 digits
+    const digitsOnly = cleanIdentifier.replace(/\D/g, '');
+    if (digitsOnly.length >= 10) {
+      const phoneQuery = digitsOnly.slice(-10);
+      searchConditions.push({ phone: phoneQuery });
+      // Suffix matching to cover database entries stored with '+91', '91', '0' etc.
+      searchConditions.push({ phone: { $regex: phoneQuery + '$' } });
+    }
+    
     const user = await User.findOne({
-      $or: [
-        { email: cleanIdentifier.toLowerCase() },
-        { phone: cleanIdentifier }
-      ]
+      $or: searchConditions
     });
     
     if (!user || !(await user.comparePassword(password))) {

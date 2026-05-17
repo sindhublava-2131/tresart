@@ -31,11 +31,14 @@ const AuthModal = ({ isOpen, onClose }) => {
 
     // Clean inputs to strip out mobile auto-completed trailing spaces
     const cleanEmail = (formData.email || '').trim();
-    const cleanPhone = (formData.phone || '').trim();
     const cleanName = (formData.name || '').trim();
     const cleanStreet = (formData.street || '').trim();
     const cleanLandmark = (formData.landmark || '').trim();
     const cleanPincode = (formData.pincode || '').trim();
+
+    // Extract exactly the last 10 digits from phone input to accommodate country code prefixes or spaces (+91, 0, etc.)
+    const digitsOnly = (formData.phone || '').replace(/\D/g, '');
+    const cleanPhone = digitsOnly.length >= 10 ? digitsOnly.slice(-10) : digitsOnly;
 
     if (!isLogin) {
       // Validate email (must be @gmail.com)
@@ -48,7 +51,7 @@ const AuthModal = ({ isOpen, onClose }) => {
       // Validate phone number (exactly 10 digits)
       const phoneRegex = /^[0-9]{10}$/;
       if (!phoneRegex.test(cleanPhone)) {
-        setError('Phone number must be exactly 10 digits.');
+        setError('Phone number must be a valid 10-digit number (e.g. 9876543210).');
         setLoading(false);
         return;
       }
