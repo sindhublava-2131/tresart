@@ -12,8 +12,8 @@
   --tres-dark: #0a0a0a;
 
   /* Light Theme Variables */
-  --color-bg-primary: #f3e8ff;
-  --color-text-primary: #3b0764;
+  --color-bg-primary: #ffffff;
+  --color-text-primary: #1a1a1a;
   --color-accent: #7e22ce;
   --color-border: rgba(0, 0, 0, 0.1);
 
@@ -62,8 +62,6 @@
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
   background-color: var(--color-bg-primary);

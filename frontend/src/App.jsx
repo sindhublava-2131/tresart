@@ -259,18 +259,18 @@ function App() {
               exit={{ opacity: 0 }}
               className="pt-24 md:pt-28"
             >
-              {/* Hero Banner Full Width */}
-              <motion.div id="home" variants={childVariants} className="w-full h-[400px] md:h-[500px] overflow-hidden relative font-sans">
+              {/* Hero Banner Full Width — responsive via aspect-ratio */}
+              <motion.div id="home" variants={childVariants} className="w-full aspect-[4/3] sm:aspect-[16/7] overflow-hidden relative font-sans">
                 <img 
                   src="/banner.png" 
                   alt="TresArt Banner" 
-                  className="w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                   onError={(e) => {
-                    e.target.src = '/image.png'; // Fallback to image.png
+                    e.target.src = '/image.png';
                   }}
                 />
-                <div className="absolute inset-0 bg-black/40 flex flex-col justify-center items-center text-white text-center p-4">
-                  <p className="text-xs md:text-sm uppercase tracking-[0.5em] text-white/80">Hand-painted canvas pouches & tote bags</p>
+                <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center p-4">
+                  <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.3em] sm:tracking-[0.5em] text-white/80">Hand-painted canvas pouches & tote bags</p>
                 </div>
               </motion.div>
 
