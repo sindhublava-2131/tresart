@@ -10,6 +10,7 @@ const Customizer = () => {
   const [giftFor, setGiftFor] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // array of { file, previewUrl }
   const [uploadError, setUploadError] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -78,14 +79,57 @@ const Customizer = () => {
     }
   };
 
-  const handleWhatsApp = () => {
+  const handleWhatsApp = async () => {
+    let uploadedImageUrls = [];
+    
+    if (uploadedFiles.length > 0) {
+      setIsUploading(true);
+      try {
+        const readAsBase64 = (file) => new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = error => reject(error);
+          reader.readAsDataURL(file);
+        });
+
+        const apiBaseUrl = import.meta.env.VITE_API_URL || 'https://tresart.onrender.com';
+        
+        for (const fileObj of uploadedFiles) {
+          const base64Data = await readAsBase64(fileObj.file);
+          const res = await fetch(`${apiBaseUrl}/api/products/custom/upload`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: base64Data })
+          });
+          if (!res.ok) {
+            throw new Error('Failed to upload an image.');
+          }
+          const data = await res.json();
+          const publicUrl = `${apiBaseUrl}/api/products/custom/image/${data.id}`;
+          uploadedImageUrls.push(publicUrl);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Error uploading reference images. Please try again.');
+        setIsUploading(false);
+        return;
+      }
+      setIsUploading(false);
+    }
+    
     let message = `Hello TresArt! I'd like to customize a *${selectedProduct === 'giftset' ? 'Gift Set' : selectedProduct === 'tote' ? 'Tote Bag' : 'Pouch'}*.\n\n`;
     
     if (selectedProduct === 'tote' || selectedProduct === 'pouch') {
       if (selectedTheme) message += `*Theme:* ${selectedTheme}\n`;
       if (customText) message += `*Custom Text:* ${customText}\n`;
-      if (uploadedFiles.length > 0) {
-        message += `*Reference Images:* ${uploadedFiles.length} selected (I will send them in this chat next)\n`;
+      
+      if (uploadedImageUrls.length > 0) {
+        message += `*Reference Images:* \n`;
+        uploadedImageUrls.forEach((url, i) => {
+          message += `- Reference Image ${i + 1}: ${url}\n`;
+        });
       }
     } else if (selectedProduct === 'giftset') {
       message += `*Included Items:* ${giftItems.join(', ')}\n`;
@@ -343,12 +387,27 @@ const Customizer = () => {
               <div className="mt-10 flex justify-center">
                 <button 
                   onClick={handleWhatsApp}
-                  className="group relative flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] font-semibold text-sm uppercase tracking-widest overflow-hidden hover:scale-105 transition-all duration-300 shadow-[0_10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_rgba(255,255,255,0.05)]"
+                  disabled={isUploading}
+                  className={`group relative flex items-center justify-center gap-3 px-10 py-5 rounded-full bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] font-semibold text-sm uppercase tracking-widest overflow-hidden hover:scale-105 transition-all duration-300 shadow-[0_10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_10px_40px_rgba(255,255,255,0.05)] ${isUploading ? 'opacity-70 cursor-not-allowed' : ''}`}
                 >
                   <span className="relative z-10 flex items-center gap-2">
-                    Send to TresArt <MessageCircle size={18} className="group-hover:translate-x-1 transition-transform" />
+                    {isUploading ? (
+                      <>
+                        Uploading Images...
+                        <svg className="animate-spin h-5 w-5 text-[var(--color-bg-primary)]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                      </>
+                    ) : (
+                      <>
+                        Send to TresArt <MessageCircle size={18} className="group-hover:translate-x-1 transition-transform" />
+                      </>
+                    )}
                   </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {!isUploading && (
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  )}
                 </button>
               </div>
 
