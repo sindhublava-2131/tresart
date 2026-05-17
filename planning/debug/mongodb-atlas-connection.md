@@ -18,4 +18,21 @@
 - Terminal should now show `✅ Connected to MongoDB Atlas`.
 
 ## Status
-**RESOLVED**
+**REOPENED**
+
+## 2026-05-11 Investigation
+- **Symptom**: `MongooseServerSelectionError` with `ReplicaSetNoPrimary`.
+- **Deep Dive**:
+  - DNS resolution (SRV/TXT) is working.
+  - TCP connectivity to shards on port 27017 is successful (`Test-NetConnection` passed).
+  - Detailed error log shows: `MongoNetworkError: tlsv1 alert internal error (SSL alert number 80)`.
+- **Diagnosis**: 
+  - **SSL alert 80** from MongoDB Atlas is a definitive sign that the client IP is not whitelisted.
+  - Even though TCP is open, Atlas rejects the TLS handshake if the IP is not in the "Network Access" list.
+
+## Required Action for User
+1. Log in to [MongoDB Atlas](https://cloud.mongodb.com/).
+2. Go to **Security** -> **Network Access**.
+3. Click **Add IP Address**.
+4. Click **Add Current IP Address** or add `0.0.0.0/0` (Allow Access from Anywhere) to test.
+5. Wait ~30 seconds for the change to propagate and try again.

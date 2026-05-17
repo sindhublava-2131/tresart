@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, MessageCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
+import { indianStates, majorCitiesByState } from '../utils/indiaData';
 
 const CheckoutModal = ({ isOpen, onClose }) => {
   const { user } = useAuth();
@@ -10,7 +11,12 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
-    address: ''
+    street: '',
+    landmark: '',
+    city: '',
+    state: '',
+    pincode: '',
+    otherCity: ''
   });
 
   useEffect(() => {
@@ -18,13 +24,46 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       setFormData({
         name: user.name || '',
         phone: user.phone || '',
-        address: user.address || ''
+        street: user.street || '',
+        landmark: user.landmark || '',
+        city: user.city || '',
+        state: user.state || '',
+        pincode: user.pincode || '',
+        otherCity: ''
       });
     }
   }, [user, isOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    // Validate phone number (exactly 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Phone number must be exactly 10 digits.');
+      return;
+    }
+
+    // Validate address
+    if (!formData.street || !formData.city || !formData.state) {
+      alert('Please complete all mandatory address fields (Street, City, State).');
+      return;
+    }
+
+    // Validate 6-digit pincode
+    const pincodeRegex = /^[0-9]{6}$/;
+    if (!pincodeRegex.test(formData.pincode)) {
+      alert('Pincode must be exactly 6 digits.');
+      return;
+    }
+
+    if (formData.city === 'Other' && !formData.otherCity) {
+      alert('Please specify your city name.');
+      return;
+    }
+
+    const cityToUse = formData.city === 'Other' ? formData.otherCity : formData.city;
+    const fullAddress = `${formData.street}, ${formData.landmark ? formData.landmark + ', ' : ''}${cityToUse}, ${formData.state} - ${formData.pincode}`;
 
     // Format WhatsApp message
     const orderItems = cart
@@ -39,7 +78,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       `*Delivery Information:*%0A` +
       `- Name: ${formData.name}%0A` +
       `- Phone: ${formData.phone}%0A` +
-      `- Address: ${formData.address}%0A%0A` +
+      `- Address: ${encodeURIComponent(fullAddress)}%0A%0A` +
       `Please confirm my order. Thank you! ✨`;
 
     const whatsappUrl = `https://wa.me/6363943487?text=${message}`;
@@ -107,16 +146,91 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Delivery Address</label>
-                <textarea
-                  required
-                  rows={3}
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-3 focus:border-[var(--color-accent)] transition-colors outline-none text-lg resize-none"
-                  placeholder="House No, Street, Landmark, City, Pincode"
-                />
+              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Street / House No.</label>
+                  <input
+                    required
+                    type="text"
+                    value={formData.street}
+                    onChange={(e) => setFormData({...formData, street: e.target.value})}
+                    className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg"
+                    placeholder="Street name"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Landmark</label>
+                  <input
+                    type="text"
+                    value={formData.landmark}
+                    onChange={(e) => setFormData({...formData, landmark: e.target.value})}
+                    className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg"
+                    placeholder="Nearby landmark"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">State</label>
+                    <select
+                      required
+                      className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg appearance-none"
+                      value={formData.state}
+                      onChange={(e) => setFormData({...formData, state: e.target.value, city: ''})}
+                    >
+                      <option value="">Select State</option>
+                      {indianStates.map(state => (
+                        <option key={state} value={state}>{state}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">City</label>
+                    <select
+                      required
+                      className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg appearance-none"
+                      value={formData.city}
+                      onChange={(e) => setFormData({...formData, city: e.target.value})}
+                      disabled={!formData.state}
+                    >
+                      <option value="">Select City</option>
+                      {formData.state && majorCitiesByState[formData.state]?.map(city => (
+                        <option key={city} value={city}>{city}</option>
+                      ))}
+                      {formData.state && <option value="Other">Other</option>}
+                    </select>
+                  </div>
+                </div>
+
+                {formData.city === 'Other' && (
+                  <motion.div 
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-2"
+                  >
+                    <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Specify City Name</label>
+                    <input
+                      required
+                      type="text"
+                      value={formData.otherCity}
+                      onChange={(e) => setFormData({...formData, otherCity: e.target.value})}
+                      className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg"
+                      placeholder="Enter city name"
+                    />
+                  </motion.div>
+                )}
+
+                <div className="space-y-2">
+                  <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Pincode (6 digits)</label>
+                  <input
+                    required
+                    type="text"
+                    value={formData.pincode}
+                    onChange={(e) => setFormData({...formData, pincode: e.target.value})}
+                    className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg"
+                  />
+                </div>
               </div>
 
               <div className="pt-6">

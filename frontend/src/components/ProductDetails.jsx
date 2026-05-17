@@ -1,117 +1,225 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ShieldCheck, Truck, RotateCcw, Star } from 'lucide-react';
+import { X, ShieldCheck, Truck, Star } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 const ProductDetails = ({ product, isOpen, onClose }) => {
+  const { addToCart } = useCart();
+  const [added, setAdded] = React.useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpen]);
+
   if (!product) return null;
+
+  const handleAdd = async () => {
+    const result = await addToCart(product._id);
+    if (result.success) {
+      setAdded(true);
+      setTimeout(() => setAdded(false), 2000);
+    } else {
+      alert(result.error);
+    }
+  };
+
+  // Animation variants
+  const overlayVariants = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { duration: 0.5, ease: 'easeOut' } },
+    exit: { opacity: 0, transition: { duration: 0.4, delay: 0.2 } }
+  };
+
+  const containerVariants = {
+    hidden: { x: '100%' },
+    visible: { 
+      x: 0, 
+      transition: { 
+        type: 'spring', 
+        damping: 30, 
+        stiffness: 250, 
+        mass: 0.8,
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      } 
+    },
+    exit: { 
+      x: '100%', 
+      transition: { type: 'spring', damping: 30, stiffness: 250 } 
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' } }
+  };
 
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex">
+          {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             onClick={onClose}
-            className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer"
           />
           
+          {/* Slide-in Panel */}
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 40 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 40 }}
-            className="relative w-full max-w-4xl bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-sm shadow-2xl overflow-hidden flex flex-col md:flex-row max-h-[90vh]"
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="relative ml-auto w-full md:w-[85vw] lg:w-[75vw] h-full bg-[var(--color-bg-primary)] shadow-2xl flex flex-col md:flex-row overflow-hidden border-l border-[var(--color-border)]"
           >
+            {/* Close Button */}
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 z-10 p-2 bg-black/20 text-white hover:bg-[var(--color-accent)] transition-colors rounded-full"
+              className="absolute top-6 right-6 z-50 p-3 bg-[var(--color-bg-primary)]/80 backdrop-blur-md text-[var(--color-text-primary)] hover:bg-[var(--color-accent)] hover:text-white transition-colors duration-300 rounded-full border border-[var(--color-border)] shadow-sm group"
             >
-              <X size={20} />
+              <X size={20} className="group-hover:rotate-90 transition-transform duration-500" />
             </button>
 
-            {/* Image Section */}
-            <div className="w-full md:w-1/2 bg-[var(--color-border)]">
-              <img 
+            {/* Left: Image Hero */}
+            <div className="w-full md:w-1/2 h-[50vh] md:h-full relative bg-[var(--color-bg-primary)]">
+              <motion.img 
+                initial={{ scale: 1.05, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 1, ease: 'easeOut', delay: 0.2 }}
                 src={product.imageURL} 
                 alt={product.name} 
                 className="w-full h-full object-cover"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-primary)]/40 via-transparent to-transparent md:bg-gradient-to-r" />
             </div>
 
-            {/* Info Section */}
-            <div className="w-full md:w-1/2 p-8 md:p-12 overflow-y-auto">
-              <div className="mb-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-2 py-1 bg-[var(--color-accent)] text-white text-[8px] uppercase tracking-widest font-bold rounded-sm">Featured</span>
-                  <div className="flex items-center gap-1 text-yellow-500">
-                    <Star size={10} fill="currentColor" />
-                    <Star size={10} fill="currentColor" />
-                    <Star size={10} fill="currentColor" />
-                    <Star size={10} fill="currentColor" />
-                    <Star size={10} fill="currentColor" />
-                    <span className="text-[10px] text-[var(--color-text-primary)]/40 ml-1">(4.9)</span>
-                  </div>
-                </div>
-                <h2 className="text-4xl font-serif tracking-tight mb-2">{product.name}</h2>
-                <p className="text-2xl font-serif text-[var(--color-accent)]">₹{product.price}</p>
-              </div>
+            {/* Right: Content & Details */}
+            <div className="w-full md:w-1/2 h-[50vh] md:h-full overflow-y-auto bg-[var(--color-bg-primary)]">
+              <div className="p-8 md:p-14 flex flex-col min-h-full">
+                
+                <motion.div variants={itemVariants} className="mb-6">
+                  <h2 className="text-3xl font-serif text-[var(--color-text-primary)] leading-tight mb-2">{product.name}</h2>
+                  <p className="text-xl font-serif text-[var(--color-text-primary)]/70">₹{product.price}</p>
+                </motion.div>
 
-              <div className="space-y-8">
-                {/* Description */}
-                <div>
-                  <h4 className="text-[10px] uppercase tracking-[0.3em] text-[var(--color-text-primary)]/40 mb-3 font-bold">About the piece</h4>
-                  <p className="text-sm leading-relaxed text-[var(--color-text-primary)]/80">
-                    {product.description}
-                  </p>
-                </div>
-
-                {/* Highlights Table */}
-                <div className="grid grid-cols-2 gap-y-4 gap-x-8 py-6 border-y border-[var(--color-border)]">
-                  <div>
-                    <h5 className="text-[9px] uppercase tracking-widest text-[var(--color-text-primary)]/40 mb-1">Occasion</h5>
-                    <p className="text-xs font-medium">Casual / Artistic</p>
-                  </div>
-                  <div>
-                    <h5 className="text-[9px] uppercase tracking-widest text-[var(--color-text-primary)]/40 mb-1">Product Net Weight</h5>
-                    <p className="text-xs font-medium">100g</p>
-                  </div>
-                  <div>
-                    <h5 className="text-[9px] uppercase tracking-widest text-[var(--color-text-primary)]/40 mb-1">Product Breadth</h5>
-                    <p className="text-xs font-medium">10 cm</p>
-                  </div>
-                  <div>
-                    <h5 className="text-[9px] uppercase tracking-widest text-[var(--color-text-primary)]/40 mb-1">Product Height</h5>
-                    <p className="text-xs font-medium">10 cm</p>
-                  </div>
-                </div>
-
-                {/* Seller Info */}
-                <div className="flex items-center justify-between p-4 bg-[var(--color-border)]/20 rounded-sm border border-[var(--color-border)]">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-black flex items-center justify-center text-white font-serif text-lg rounded-sm">T</div>
-                    <div>
-                      <p className="text-[9px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Sold by</p>
-                      <p className="text-xs font-bold tracking-widest text-[var(--color-accent)]">TRESART OFFICIAL</p>
+                <div className="space-y-6 flex-grow">
+                  {/* Detailed Specifications */}
+                  <motion.div variants={itemVariants} className="mt-4 pb-6">
+                    {/* Product Highlights */}
+                    <div className="mb-6">
+                      <h3 className="text-sm font-serif font-bold text-[var(--color-text-primary)] mb-4 border-b border-[var(--color-border)]/20 pb-2">
+                        Product Highlights
+                      </h3>
+                      <div className="grid grid-cols-2 gap-y-4 gap-x-4">
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Occasion</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">Casual</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Product Net Weight</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">100</p>
+                        </div>
+                        {product.category !== 'Pouches' && (
+                          <>
+                            <div>
+                              <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Product Breadth</h5>
+                              <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">10</p>
+                            </div>
+                            <div>
+                              <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Product Height</h5>
+                              <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">10</p>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-1 px-2 py-1 bg-green-500/10 text-green-500 rounded-full">
-                    <Star size={10} fill="currentColor" />
-                    <span className="text-[10px] font-bold">4.9</span>
-                  </div>
+
+                    {/* Additional Details */}
+                    <div>
+                      <h3 className="text-sm font-serif font-bold text-[var(--color-text-primary)] mb-4 border-b border-[var(--color-border)]/20 pb-2">
+                        Additional Details
+                      </h3>
+                      <div className="grid grid-cols-2 gap-y-4 gap-x-4">
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Generic Name</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? 'Pouch' : 'Tote'}</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Type</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? 'Pouch' : 'Tote & Hobo'}</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Size</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? 'M' : 'Free Size'}</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Material</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">Canvas</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Pattern</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? 'Solid' : 'Textured'}</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Product Length</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? '12' : '10'}</p>
+                        </div>
+                        {product.category === 'Pouches' && (
+                          <div>
+                            <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Product Width</h5>
+                            <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">21</p>
+                          </div>
+                        )}
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Unit</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">Cm</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Net Quantity</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">{product.category === 'Pouches' ? '1' : '1'}</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Ideal For</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">Women</p>
+                        </div>
+                        <div>
+                          <h5 className="text-[10px] uppercase tracking-wider text-[var(--color-text-primary)]/50 mb-1">Country of Origin</h5>
+                          <p className="text-xs font-medium tracking-wide text-[var(--color-text-primary)]">India</p>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
 
-                {/* Guarantees */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="flex flex-col items-center text-center">
-                    <ShieldCheck size={20} className="mb-2 text-[var(--color-accent)]" />
-                    <p className="text-[8px] uppercase tracking-widest font-medium">Authentic Art</p>
-                  </div>
-                  <div className="flex flex-col items-center text-center">
-                    <Truck size={20} className="mb-2 text-[var(--color-accent)]" />
-                    <p className="text-[8px] uppercase tracking-widest font-medium">Secure Delivery</p>
-                  </div>
-                </div>
+                {/* Sticky Action Footer */}
+                <motion.div 
+                  variants={itemVariants}
+                  className="mt-6 pt-6 border-t border-[var(--color-border)]/20 sticky bottom-0 bg-[var(--color-bg-primary)] pb-4 md:pb-0"
+                >
+                  <button 
+                    onClick={handleAdd}
+                    disabled={added}
+                    className={`w-full py-4 px-6 text-xs uppercase tracking-[0.2em] font-semibold transition-all duration-300 flex items-center justify-center gap-3 ${
+                      added 
+                        ? 'bg-green-600 text-white' 
+                        : 'bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] hover:bg-[var(--color-accent)] hover:text-white'
+                    }`}
+                  >
+                    {added ? 'Added to Cart' : 'Add to Cart'}
+                  </button>
+                </motion.div>
+
               </div>
             </div>
           </motion.div>

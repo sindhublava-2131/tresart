@@ -8,8 +8,8 @@ const router = express.Router();
 // Register
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, phone, address } = req.body;
-    const user = new User({ name, email, password, phone, address });
+    const { name, email, password, phone, street, landmark, city, state, pincode, nationality } = req.body;
+    const user = new User({ name, email, password, phone, street, landmark, city, state, pincode, nationality });
     await user.save();
     
     const token = jwt.sign({ _id: user._id.toString() }, process.env.JWT_SECRET || 'tresart_secret_key');
@@ -45,7 +45,7 @@ router.get('/me', auth, async (req, res) => {
 // Update Profile
 router.put('/me', auth, async (req, res) => {
   const updates = Object.keys(req.body);
-  const allowedUpdates = ['name', 'phone', 'address', 'password'];
+  const allowedUpdates = ['name', 'phone', 'street', 'landmark', 'city', 'state', 'pincode', 'nationality', 'password'];
   const isValidOperation = updates.every((update) => allowedUpdates.includes(update));
 
   if (!isValidOperation) {

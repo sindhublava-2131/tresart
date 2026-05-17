@@ -17,7 +17,7 @@ const LogoAnimation = ({ onComplete }) => {
       {/* Ripple Effect */}
       <motion.div
         className="absolute rounded-full"
-        style={{ border: '1px solid rgba(255, 255, 255, 0.2)' }}
+        style={{ border: '1px solid rgba(0, 0, 0, 0.2)' }}
         initial={{ width: 100, height: 100, opacity: 0 }}
         animate={{ width: [100, 1000], height: [100, 1000], opacity: [0, 0.2, 0] }}
         transition={{ delay: 0.5, duration: 2, ease: "easeOut" }}
@@ -30,19 +30,14 @@ const LogoAnimation = ({ onComplete }) => {
         onAnimationComplete={() => {
           setTimeout(() => {
             if (onComplete) onComplete();
-          }, 2500);
+          }, 1500);
         }}
         className="relative z-10 w-[280px] h-[280px] md:w-[350px] md:h-[350px] flex items-center justify-center"
       >
         <img 
-          src="/logo.jpg" 
+          src="/image.png" 
           alt="TresArt Logo" 
           className="w-full h-full object-contain"
-          style={{ 
-            filter: 'invert(1) hue-rotate(180deg) brightness(1.2)',
-            mixBlendMode: 'screen',
-            clipPath: 'inset(0% 0% 25% 0%)' // Crop text at bottom if needed
-          }}
           draggable={false}
         />
       </motion.div>

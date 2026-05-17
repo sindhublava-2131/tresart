@@ -2,17 +2,39 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { LogOut, User, Settings, Edit3, Save, X, Phone, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { indianStates, majorCitiesByState } from '../utils/indiaData';
 
 const UserProfile = () => {
   const { user, logout, updateProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState('profile');
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
-    address: user?.address || ''
+    street: user?.street || '',
+    landmark: user?.landmark || '',
+    city: user?.city || '',
+    state: user?.state || '',
+    pincode: user?.pincode || '',
+    nationality: user?.nationality || 'Indian',
+    otherCity: ''
   });
+
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '',
+        phone: user.phone || '',
+        street: user.street || '',
+        landmark: user.landmark || '',
+        city: user.city || '',
+        state: user.state || '',
+        pincode: user.pincode || '',
+        nationality: user.nationality || 'Indian',
+        otherCity: ''
+      });
+    }
+  }, [user]);
 
   if (!user) {
     return (
@@ -23,8 +45,33 @@ const UserProfile = () => {
   }
 
   const handleSave = async () => {
+    // Validate phone number (exactly 10 digits)
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      alert('Phone number must be exactly 10 digits.');
+      return;
+    }
+
+    // Validate 6-digit pincode
+    const pincodeRegex = /^[0-9]{6}$/;
+    if (!pincodeRegex.test(formData.pincode)) {
+      alert('Please include a valid 6-digit pincode.');
+      return;
+    }
+
     setLoading(true);
-    const result = await updateProfile(formData);
+    const { otherCity, ...updateData } = {
+      ...formData,
+      city: formData.city === 'Other' ? formData.otherCity : formData.city
+    };
+
+    if (formData.city === 'Other' && !formData.otherCity) {
+      alert('Please specify your city name.');
+      setLoading(false);
+      return;
+    }
+
+    const result = await updateProfile(updateData);
     setLoading(false);
     if (result.success) {
       setIsEditing(false);
@@ -38,60 +85,33 @@ const UserProfile = () => {
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-20 flex flex-col md:flex-row md:items-end justify-between gap-8"
+        className="mb-20 flex flex-col items-center justify-center text-center gap-8"
       >
-        <div>
-          <h1 className="text-5xl font-serif mb-4 tracking-tight">Studio Dashboard</h1>
-          <div className="flex items-center gap-4 text-[var(--color-text-primary)]/40 tracking-[0.3em] uppercase text-[10px]">
-            <span>Collector Profile</span>
-            <span className="w-1.5 h-1.5 bg-[var(--color-accent)] rounded-full"></span>
-            <span>{user.name}</span>
-          </div>
-        </div>
+        <h1 className="text-6xl font-sans font-black tracking-tight uppercase">Dashboard</h1>
         <button 
           onClick={logout}
-          className="w-fit flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] px-6 py-3 border border-[var(--color-border)] hover:bg-white hover:text-black transition-all duration-500 rounded-sm"
+          className="flex items-center gap-3 text-[10px] uppercase tracking-[0.4em] px-8 py-3 border border-[var(--color-border)] hover:bg-[var(--color-text-primary)] hover:text-[var(--color-bg-primary)] transition-all duration-500 rounded-sm"
         >
           <LogOut size={14} />
           Secure Sign Out
         </button>
       </motion.div>
 
-      <div className="flex flex-col md:flex-row gap-16">
-        {/* Sidebar Nav */}
-        <div className="w-full md:w-64 flex flex-col gap-2">
-          <button 
-            onClick={() => setActiveTab('profile')}
-            className={`flex items-center gap-4 p-5 text-[10px] tracking-[0.3em] uppercase text-left transition-all duration-300 rounded-sm ${activeTab === 'profile' ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] font-bold' : 'hover:bg-[var(--color-border)]/40'}`}
-          >
-            <User size={16} />
-            Account Details
-          </button>
-          <button 
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-4 p-5 text-[10px] tracking-[0.3em] uppercase text-left transition-all duration-300 rounded-sm ${activeTab === 'settings' ? 'bg-[var(--color-text-primary)] text-[var(--color-bg-primary)] font-bold' : 'hover:bg-[var(--color-border)]/40'}`}
-          >
-            <Settings size={16} />
-            Preferences
-          </button>
-        </div>
-
+      <div className="max-w-4xl mx-auto">
         {/* Content Area */}
-        <div className="flex-1">
+        <div className="w-full">
           <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: "easeOut" }}
           >
-            {activeTab === 'profile' && (
-              <div className="space-y-12">
+            <div className="space-y-12">
                 <div className="flex justify-between items-center border-b border-[var(--color-border)] pb-6">
                   <h2 className="text-2xl font-serif tracking-tight">Personal Information</h2>
                   {!isEditing ? (
                     <button 
                       onClick={() => setIsEditing(true)}
-                      className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40 hover:text-white transition-colors"
+                      className="flex items-center gap-2 text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40 hover:text-[var(--color-accent)] transition-colors"
                     >
                       <Edit3 size={16} />
                       Edit Profile
@@ -153,21 +173,126 @@ const UserProfile = () => {
                     )}
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2 text-[var(--color-text-primary)]/30">
+                  <div className="space-y-6 md:col-span-2 border-t border-[var(--color-border)] pt-10">
+                    <div className="flex items-center gap-2 text-[var(--color-text-primary)]/30 mb-4">
                       <MapPin size={12} />
-                      <p className="text-[10px] tracking-[0.3em] uppercase">Shipping Address</p>
+                      <p className="text-[10px] tracking-[0.3em] uppercase">Detailed Shipping Address</p>
                     </div>
-                    {isEditing ? (
-                      <textarea 
-                        rows={3}
-                        value={formData.address}
-                        onChange={(e) => setFormData({...formData, address: e.target.value})}
-                        className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors resize-none"
-                      />
-                    ) : (
-                      <p className="text-lg font-medium leading-relaxed">{user.address || 'Not provided'}</p>
-                    )}
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">Street / House No.</p>
+                        {isEditing ? (
+                          <input 
+                            type="text"
+                            value={formData.street}
+                            onChange={(e) => setFormData({...formData, street: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors"
+                          />
+                        ) : (
+                          <p className="text-lg font-medium">{formData.street || 'Not provided'}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">Landmark</p>
+                        {isEditing ? (
+                          <input 
+                            type="text"
+                            value={formData.landmark}
+                            onChange={(e) => setFormData({...formData, landmark: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors"
+                          />
+                        ) : (
+                          <p className="text-lg font-medium">{formData.landmark || 'Not provided'}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">State</p>
+                        {isEditing ? (
+                          <select 
+                            value={formData.state}
+                            onChange={(e) => setFormData({...formData, state: e.target.value, city: ''})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors appearance-none"
+                          >
+                            <option value="" className="bg-[var(--color-bg-primary)]">Select State</option>
+                            {indianStates.map(state => (
+                              <option key={state} value={state} className="bg-[var(--color-bg-primary)]">{state}</option>
+                            ))}
+                          </select>
+                        ) : (
+                          <p className="text-lg font-medium">{formData.state || 'Not provided'}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">City</p>
+                        {isEditing ? (
+                          <select 
+                            value={formData.city}
+                            onChange={(e) => setFormData({...formData, city: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors appearance-none"
+                            disabled={!formData.state}
+                          >
+                            <option value="" className="bg-[var(--color-bg-primary)]">Select City</option>
+                            {formData.state && majorCitiesByState[formData.state]?.map(city => (
+                              <option key={city} value={city} className="bg-[var(--color-bg-primary)]">{city}</option>
+                            ))}
+                            {formData.state && <option value="Other" className="bg-[var(--color-bg-primary)]">Other</option>}
+                          </select>
+                        ) : (
+                          <p className="text-lg font-medium">{formData.city || 'Not provided'}</p>
+                        )}
+                      </div>
+
+                      {isEditing && formData.city === 'Other' && (
+                        <motion.div 
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="space-y-2 md:col-span-2"
+                        >
+                          <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">Specify City Name</p>
+                          <input 
+                            type="text"
+                            value={formData.otherCity}
+                            onChange={(e) => setFormData({...formData, otherCity: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors"
+                            placeholder="Enter your city name"
+                          />
+                        </motion.div>
+                      )}
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">Pincode</p>
+                        {isEditing ? (
+                          <input 
+                            type="text"
+                            value={formData.pincode}
+                            onChange={(e) => setFormData({...formData, pincode: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors"
+                          />
+                        ) : (
+                          <p className="text-lg font-medium">{formData.pincode || 'Not provided'}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="text-[10px] tracking-[0.3em] uppercase text-[var(--color-text-primary)]/30">Nationality</p>
+                        {isEditing ? (
+                          <select 
+                            value={formData.nationality}
+                            onChange={(e) => setFormData({...formData, nationality: e.target.value})}
+                            className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors appearance-none"
+                          >
+                            <option value="Indian" className="bg-[var(--color-bg-primary)]">Indian</option>
+                            <option value="International" className="bg-[var(--color-bg-primary)]">International</option>
+                          </select>
+                        ) : (
+                          <p className="text-lg font-medium">{formData.nationality}</p>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
 
@@ -177,28 +302,7 @@ const UserProfile = () => {
                     Your profile details are used to pre-fill delivery information during checkout. Keep them updated for a seamless artistic acquisition experience.
                   </p>
                 </div>
-              </div>
-            )}
-
-            {activeTab === 'settings' && (
-              <div className="space-y-12">
-                <h2 className="text-2xl font-serif border-b border-[var(--color-border)] pb-6 tracking-tight">Preferences</h2>
-                <div className="space-y-8">
-                  <div className="flex justify-between items-center p-6 border border-[var(--color-border)] rounded-sm">
-                    <div>
-                      <p className="text-xs uppercase tracking-widest mb-1">Newsletter</p>
-                      <p className="text-[10px] text-[var(--color-text-primary)]/40 uppercase tracking-widest">Receive updates on new collections</p>
-                    </div>
-                    <div className="w-12 h-6 bg-[var(--color-accent)] rounded-full relative cursor-pointer">
-                      <div className="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div>
-                    </div>
-                  </div>
-                  <p className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/30 text-center">
-                    More settings coming soon.
-                  </p>
-                </div>
-              </div>
-            )}
+            </div>
           </motion.div>
         </div>
       </div>

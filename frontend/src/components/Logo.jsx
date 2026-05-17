@@ -5,48 +5,34 @@ const Logo = ({ onClick }) => {
   return (
     <motion.div 
       onClick={onClick}
-      className="cursor-pointer group"
+      className="cursor-pointer group select-none"
       whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
     >
-      <svg 
-        width="180" 
-        height="40" 
-        viewBox="0 0 180 40" 
-        fill="none" 
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <motion.text
-          x="0"
-          y="30"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          fontSize="32"
-          fontFamily="'Playfair Display', serif"
-          letterSpacing="0.2em"
-          className="text-[var(--color-text-primary)]"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ 
-            duration: 2.5, 
-            ease: "easeInOut",
-            pathLength: { duration: 2, ease: "easeInOut" },
-            opacity: { duration: 1, delay: 0.5 }
-          }}
-        >
-          TRESART
-        </motion.text>
+      {/* Logo container without background */}
+      <div className="flex items-center gap-3 transition-transform duration-300">
         
-        <motion.path
-          d="M0 38H180"
-          stroke="currentColor"
-          strokeWidth="0.5"
-          className="text-[var(--color-text-primary)]"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 0.2 }}
-          transition={{ duration: 1.5, delay: 2 }}
-        />
-      </svg>
+        {/* Logo Icon - Made bigger, hidden in dark mode */}
+        <div className="w-20 h-20 flex items-center justify-center overflow-hidden dark:hidden">
+          <img 
+            src="/image.png" 
+            alt="TresArt Icon" 
+            className="w-full h-full object-contain filter drop-shadow-md dark:invert"
+            draggable={false}
+          />
+        </div>
+
+        {/* Text Section - Bigger text, tres in black, art in logo purple */}
+        <div className="flex items-center">
+          <span className="text-[var(--color-text-primary)] font-bold text-3xl font-serif tracking-wide">
+            tres
+          </span>
+          <span className="text-[var(--color-accent)] font-bold text-3xl font-serif tracking-wide">
+            art
+          </span>
+        </div>
+
+      </div>
     </motion.div>
   );
 };

@@ -27,7 +27,9 @@ app.get('/', (req, res) => {
 });
 
 // Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI)
+mongoose.connect(process.env.MONGODB_URI, {
+  serverSelectionTimeoutMS: 5000 // Fail quickly (5s) instead of hanging for 30s
+})
   .then(() => {
     console.log('✅ Connected to MongoDB');
     app.listen(PORT, () => {

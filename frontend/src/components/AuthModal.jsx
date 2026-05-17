@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { indianStates, majorCitiesByState } from '../utils/indiaData';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { login, register } = useAuth();
   
   const [formData, setFormData] = useState({ 
@@ -14,7 +16,12 @@ const AuthModal = ({ isOpen, onClose }) => {
     email: '', 
     password: '',
     phone: '',
-    address: ''
+    street: '',
+    landmark: '',
+    city: '',
+    state: '',
+    pincode: '',
+    otherCity: ''
   });
 
   const handleSubmit = async (e) => {
@@ -22,11 +29,55 @@ const AuthModal = ({ isOpen, onClose }) => {
     setLoading(true);
     setError('');
 
+    if (!isLogin) {
+      // Validate email (must be @gmail.com)
+      if (!formData.email.toLowerCase().endsWith('@gmail.com')) {
+        setError('Only @gmail.com email addresses are accepted.');
+        setLoading(false);
+        return;
+      }
+
+      // Validate phone number (exactly 10 digits)
+      const phoneRegex = /^[0-9]{10}$/;
+      if (!phoneRegex.test(formData.phone)) {
+        setError('Phone number must be exactly 10 digits.');
+        setLoading(false);
+        return;
+      }
+
+      // Validate address fields
+      if (!formData.street || !formData.city || !formData.state) {
+        setError('Street, City, and State are required.');
+        setLoading(false);
+        return;
+      }
+
+      // Validate 6-digit pincode
+      const pincodeRegex = /^[0-9]{6}$/;
+      if (!pincodeRegex.test(formData.pincode)) {
+        setError('Pincode must be exactly 6 digits.');
+        setLoading(false);
+        return;
+      }
+    }
+
     let result;
     if (isLogin) {
       result = await login(formData.email, formData.password);
     } else {
-      result = await register(formData);
+      // Prepare registration data (use otherCity if selected)
+      const { otherCity, ...registrationData } = {
+        ...formData,
+        city: formData.city === 'Other' ? formData.otherCity : formData.city
+      };
+      
+      if (formData.city === 'Other' && !formData.otherCity) {
+        setError('Please specify your city name.');
+        setLoading(false);
+        return;
+      }
+
+      result = await register(registrationData);
     }
 
     setLoading(false);
@@ -72,7 +123,7 @@ const AuthModal = ({ isOpen, onClose }) => {
           >
             <button 
               onClick={onClose}
-              className="absolute top-6 right-6 p-2 text-[var(--color-text-primary)]/40 hover:text-white transition-colors"
+              className="absolute top-6 right-6 p-2 text-[var(--color-text-primary)]/40 hover:text-[var(--color-accent)] transition-colors"
             >
               <X size={20} />
             </button>
@@ -122,7 +173,7 @@ const AuthModal = ({ isOpen, onClose }) => {
               {!isLogin && (
                 <>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Phone Number</label>
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Phone Number (10 digits)</label>
                     <input 
                       type="tel" 
                       required
@@ -132,13 +183,82 @@ const AuthModal = ({ isOpen, onClose }) => {
                     />
                   </div>
                   <div className="space-y-1">
-                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Delivery Address</label>
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Street / House No.</label>
                     <input 
                       type="text" 
                       required
                       className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
-                      value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      value={formData.street}
+                      onChange={(e) => setFormData({...formData, street: e.target.value})}
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Landmark</label>
+                    <input 
+                      type="text" 
+                      className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
+                      value={formData.landmark}
+                      onChange={(e) => setFormData({...formData, landmark: e.target.value})}
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">State</label>
+                      <select 
+                        required
+                        className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm appearance-none"
+                        value={formData.state}
+                        onChange={(e) => setFormData({...formData, state: e.target.value, city: ''})}
+                      >
+                        <option value="" className="bg-[var(--color-bg-primary)]">Select State</option>
+                        {indianStates.map(state => (
+                          <option key={state} value={state} className="bg-[var(--color-bg-primary)]">{state}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">City</label>
+                      <select 
+                        required
+                        className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm appearance-none"
+                        value={formData.city}
+                        onChange={(e) => setFormData({...formData, city: e.target.value})}
+                        disabled={!formData.state}
+                      >
+                        <option value="" className="bg-[var(--color-bg-primary)]">Select City</option>
+                        {formData.state && majorCitiesByState[formData.state]?.map(city => (
+                          <option key={city} value={city} className="bg-[var(--color-bg-primary)]">{city}</option>
+                        ))}
+                        {formData.state && <option value="Other" className="bg-[var(--color-bg-primary)]">Other</option>}
+                      </select>
+                    </div>
+                  </div>
+
+                  {formData.city === 'Other' && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      className="space-y-1"
+                    >
+                      <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Specify City Name</label>
+                      <input 
+                        type="text" 
+                        required
+                        className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
+                        value={formData.otherCity}
+                        onChange={(e) => setFormData({...formData, otherCity: e.target.value})}
+                      />
+                    </motion.div>
+                  )}
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Pincode (6 digits)</label>
+                    <input 
+                      type="text" 
+                      required
+                      className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
+                      value={formData.pincode}
+                      onChange={(e) => setFormData({...formData, pincode: e.target.value})}
                     />
                   </div>
                 </>
@@ -146,13 +266,22 @@ const AuthModal = ({ isOpen, onClose }) => {
 
               <div className="space-y-1">
                 <label className="text-[10px] uppercase tracking-widest text-[var(--color-text-primary)]/40">Password</label>
-                <input 
-                  type="password" 
-                  required
-                  className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                />
+                <div className="relative">
+                  <input 
+                    type={showPassword ? 'text' : 'password'} 
+                    required
+                    className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm pr-10"
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--color-text-primary)]/40 hover:text-[var(--color-accent)] transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                  </button>
+                </div>
               </div>
 
               <button 
