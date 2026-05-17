@@ -213,7 +213,7 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] font-serif transition-colors duration-500 selection:bg-[var(--color-accent)] selection:text-white">
+    <div className="w-full max-w-full overflow-x-hidden min-h-screen bg-[var(--color-bg-primary)] text-[var(--color-text-primary)] font-serif transition-colors duration-500 selection:bg-[var(--color-accent)] selection:text-white">
       <AnimatePresence>
         {showEntrance && <EntranceScreen onEnter={handleEnter} />}
       </AnimatePresence>
@@ -259,22 +259,22 @@ function App() {
               exit={{ opacity: 0 }}
               className="pt-24 md:pt-28"
             >
-              {/* Hero Banner Full Width — responsive via aspect-ratio */}
-              <motion.div id="home" variants={childVariants} className="w-full aspect-[4/3] sm:aspect-[16/7] overflow-hidden relative font-sans">
+              {/* Hero Banner — Natural Aspect Ratio & Edge-to-Edge Full Width */}
+              <motion.div id="home" variants={childVariants} className="w-full relative overflow-hidden font-sans">
                 <img 
                   src="/banner.png" 
                   alt="TresArt Banner" 
-                  className="absolute inset-0 w-full h-full object-cover object-center"
+                  className="w-full h-auto block object-contain"
                   onError={(e) => {
                     e.target.src = '/image.png';
                   }}
                 />
-                <div className="absolute inset-0 bg-black/30 flex flex-col justify-center items-center text-white text-center p-4">
-                  <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.3em] sm:tracking-[0.5em] text-white/80">Hand-painted canvas pouches & tote bags</p>
+                <div className="absolute inset-0 bg-black/35 flex flex-col justify-center items-center text-white text-center p-4">
+                  <p className="text-[10px] sm:text-xs md:text-sm uppercase tracking-[0.3em] sm:tracking-[0.5em] text-white/90 font-medium">Hand-painted canvas pouches & tote bags</p>
                 </div>
               </motion.div>
 
-              <motion.main variants={childVariants} className="max-w-7xl mx-auto px-8 py-12 pb-48">
+              <motion.main variants={childVariants} className="max-w-7xl mx-auto px-6 md:px-8 py-6 md:py-12 pb-24 md:pb-48">
                 {/* Customization Section */}
                 <div id="custom-orders">
                   <Customizer />

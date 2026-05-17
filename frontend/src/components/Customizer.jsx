@@ -61,10 +61,10 @@ const Customizer = () => {
   };
 
   return (
-    <div id="Custom-Orders" className="py-24 relative overflow-hidden mt-16 border-t border-[var(--color-border)]/10">
+    <div id="Custom-Orders" className="py-12 md:py-24 relative overflow-hidden mt-8 md:mt-16 border-t border-[var(--color-border)]/10">
       {/* Soft Background Decor */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-amber-100/10 dark:bg-amber-900/10 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute top-0 left-1/4 w-[300px] md:w-[500px] h-[300px] md:h-[500px] bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 right-1/4 w-[250px] md:w-[400px] h-[250px] md:h-[400px] bg-amber-100/10 dark:bg-amber-900/10 rounded-full blur-3xl -z-10 pointer-events-none" />
 
       <div className="max-w-4xl mx-auto px-6">
         <motion.div 
