@@ -1,0 +1,13 @@
+[build]
+  base    = "frontend"        # Netlify installs deps & runs build from here
+  command = "npm run build"   # Vite build command
+  publish = "frontend/dist"   # Output folder to deploy
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# SPA fallback — all routes serve index.html so React Router works
+[[redirects]]
+  from   = "/*"
+  to     = "/index.html"
+  status = 200
