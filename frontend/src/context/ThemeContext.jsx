@@ -3,22 +3,18 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 const ThemeContext = createContext();
 
 export const ThemeProvider = ({ children }) => {
-  const [theme, setTheme] = useState(() => {
-    // Check localStorage or system preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) return savedTheme;
-    return 'light'; // Default to light theme (white background)
-  });
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
-    localStorage.setItem('theme', theme);
-  }, [theme]);
+    root.classList.remove('dark');
+    root.classList.add('light');
+    localStorage.setItem('theme', 'light');
+  }, []);
 
   const toggleTheme = () => {
-    setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+    // Keep it light! No toggle allowed.
+    setTheme('light');
   };
 
   return (
