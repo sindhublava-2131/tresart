@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
@@ -34,7 +34,7 @@ export const CartProvider = ({ children }) => {
       const response = await axios.post('/api/cart/add', { productId, quantity });
       setCart(response.data);
       return { success: true };
-    } catch (error) {
+    } catch {
       return { success: false, error: 'Failed to add to cart' };
     }
   };

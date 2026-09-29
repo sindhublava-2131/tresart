@@ -25,14 +25,6 @@ const Customizer = () => {
     }
   };
 
-  const toggleGiftItem = (item) => {
-    if (selectedItems.includes(item)) {
-      setSelectedItems(selectedItems.filter(i => i !== item));
-    } else {
-      setSelectedItems([...selectedItems, item]);
-    }
-  };
-
   const handleWhatsApp = () => {
     let message = `Hello TresArt! I'd like to customize a *${selectedProduct === 'giftset' ? 'Gift Set' : selectedProduct === 'tote' ? 'Tote Bag' : 'Pouch'}*.\n\n`;
     

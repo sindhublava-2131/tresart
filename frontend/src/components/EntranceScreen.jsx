@@ -2,7 +2,6 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import useSound from 'use-sound';
 import LogoAnimation from './LogoAnimation';
-import Beams from './Beams';
 
 /**
  * EntranceScreen — Full-screen splash overlay with light beams and entry interaction.

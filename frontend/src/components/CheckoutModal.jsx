@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, MessageCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -6,35 +6,28 @@ import { useCart } from '../context/CartContext';
 import { indianStates, majorCitiesByState } from '../utils/indiaData';
 import { validateIndianPincode } from '../utils/addressValidation';
 
+const getCheckoutFormData = (user) => ({
+  name: user?.name || '',
+  phone: user?.phone || '',
+  street: user?.street || '',
+  landmark: user?.landmark || '',
+  city: user?.city || '',
+  state: user?.state || '',
+  pincode: user?.pincode || '',
+  otherCity: ''
+});
+
 const CheckoutModal = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { cart, cartTotal, clearCart } = useCart();
   const [isVerifyingPincode, setIsVerifyingPincode] = useState(false);
-  const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    street: '',
-    landmark: '',
-    city: '',
-    state: '',
-    pincode: '',
-    otherCity: ''
-  });
+  const [formData, setFormData] = useState(() => getCheckoutFormData(user));
+  const [syncedProps, setSyncedProps] = useState({ user, isOpen });
 
-  useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        phone: user.phone || '',
-        street: user.street || '',
-        landmark: user.landmark || '',
-        city: user.city || '',
-        state: user.state || '',
-        pincode: user.pincode || '',
-        otherCity: ''
-      });
-    }
-  }, [user, isOpen]);
+  if (syncedProps.user !== user || syncedProps.isOpen !== isOpen) {
+    setSyncedProps({ user, isOpen });
+    setFormData(getCheckoutFormData(user));
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();

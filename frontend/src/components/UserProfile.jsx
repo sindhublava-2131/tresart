@@ -1,41 +1,33 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { LogOut, User, Settings, Edit3, Save, X, Phone, MapPin } from 'lucide-react';
+import { LogOut, Edit3, Save, X, Phone, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { indianStates, majorCitiesByState } from '../utils/indiaData';
 import { validateIndianPincode } from '../utils/addressValidation';
+
+const getProfileFormData = (user) => ({
+  name: user?.name || '',
+  phone: user?.phone || '',
+  street: user?.street || '',
+  landmark: user?.landmark || '',
+  city: user?.city || '',
+  state: user?.state || '',
+  pincode: user?.pincode || '',
+  nationality: user?.nationality || 'Indian',
+  otherCity: ''
+});
 
 const UserProfile = () => {
   const { user, logout, updateProfile } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.name || '',
-    phone: user?.phone || '',
-    street: user?.street || '',
-    landmark: user?.landmark || '',
-    city: user?.city || '',
-    state: user?.state || '',
-    pincode: user?.pincode || '',
-    nationality: user?.nationality || 'Indian',
-    otherCity: ''
-  });
+  const [formData, setFormData] = useState(() => getProfileFormData(user));
+  const [syncedUser, setSyncedUser] = useState(user);
 
-  React.useEffect(() => {
-    if (user) {
-      setFormData({
-        name: user.name || '',
-        phone: user.phone || '',
-        street: user.street || '',
-        landmark: user.landmark || '',
-        city: user.city || '',
-        state: user.state || '',
-        pincode: user.pincode || '',
-        nationality: user.nationality || 'Indian',
-        otherCity: ''
-      });
-    }
-  }, [user]);
+  if (user !== syncedUser) {
+    setSyncedUser(user);
+    setFormData(getProfileFormData(user));
+  }
 
   if (!user) {
     return (

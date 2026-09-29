@@ -139,7 +139,7 @@ tresart/
 
 ### Prerequisites
 
-- **Node.js** v18+ — [Download](https://nodejs.org)
+- **Node.js** v20.19+ or v22.12+ — [Download](https://nodejs.org) (required by Vite 8)
 - **Python** 3.12+ — [Download](https://python.org)
 - **MongoDB Atlas** account — [Sign up free](https://www.mongodb.com/cloud/atlas)
 

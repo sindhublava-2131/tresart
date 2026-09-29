@@ -1,13 +1,11 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, ShoppingBag, Sun, Moon, Menu, X, ChevronDown } from 'lucide-react';
+import { User, ShoppingBag, Menu, X, ChevronDown } from 'lucide-react';
 import Logo from './Logo';
-import { useTheme } from '../context/ThemeContext';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 
 const Navbar = ({ onOpenCart, onOpenAuth, onGoHome, onOpenAbout }) => {
-  const { theme, toggleTheme } = useTheme();
   const { user } = useAuth();
   const { cartCount } = useCart();
   const [isMenuOpen, setIsMenuOpen] = React.useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';

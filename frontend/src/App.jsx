@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { AnimatePresence, motion } from 'framer-motion';
-import useSound from 'use-sound';
 import Navbar from './components/Navbar';
 import ProductCard from './components/ProductCard';
 import EntranceScreen from './components/EntranceScreen';
