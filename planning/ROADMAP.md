@@ -56,5 +56,11 @@ A 4-phase journey to build the TresArt brand, moving from a static UI to a dynam
 | 3. Core Backend | 1/1 | ✅ Complete | 2026-05-10 |
 | 4. Core Frontend | 1/1 | ✅ Complete | 2026-05-10 |
 
+## Follow-up Work: FastAPI Migration
+
+The four planned phases remain complete. After Phase 4, the API was migrated to FastAPI while the legacy Express implementation was retained for rollback. Authentication, product, and cart routes, frontend API configuration and fallback products, the development launcher, Jenkins pipeline, and setup documentation were updated.
+
+**Status**: Implemented. FastAPI tests pass (4/4) and the frontend production build passes. Live MongoDB integration and deployment runtime are not yet verified.
+
 ---
-*Last updated: 2026-05-10 after Phase 4 completion*
+*Last updated: 2026-09-29 after FastAPI migration verification*

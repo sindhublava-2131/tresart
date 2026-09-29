@@ -10,6 +10,7 @@ export const indianStates = [
 ].sort();
 
 export const majorCitiesByState = {
+  "Andaman and Nicobar Islands": ["Port Blair", "Diglipur", "Mayabunder", "Rangat", "Car Nicobar"],
   "Andhra Pradesh": ["Visakhapatnam", "Vijayawada", "Guntur", "Nellore", "Kurnool"],
   "Arunachal Pradesh": ["Itanagar", "Naharlagun", "Pasighat"],
   "Assam": ["Guwahati", "Silchar", "Dibrugarh", "Jorhat", "Nagaon"],
@@ -38,8 +39,11 @@ export const majorCitiesByState = {
   "Uttar Pradesh": ["Lucknow", "Kanpur", "Ghaziabad", "Agra", "Meerut", "Varanasi", "Noida"],
   "Uttarakhand": ["Dehradun", "Haridwar", "Roorkee", "Haldwani"],
   "West Bengal": ["Kolkata", "Howrah", "Durgapur", "Asansol", "Siliguri"],
+  "Dadra and Nagar Haveli and Daman and Diu": ["Silvassa", "Daman", "Diu"],
   "Delhi": ["New Delhi", "North Delhi", "South Delhi", "East Delhi", "West Delhi"],
   "Chandigarh": ["Chandigarh"],
   "Jammu and Kashmir": ["Srinagar", "Jammu"],
-  "Ladakh": ["Leh", "Kargil"]
+  "Ladakh": ["Leh", "Kargil"],
+  "Lakshadweep": ["Kavaratti", "Agatti", "Andrott", "Amini", "Minicoy"],
+  "Puducherry": ["Puducherry", "Karaikal", "Mahe", "Yanam"]
 };

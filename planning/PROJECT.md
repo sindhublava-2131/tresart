@@ -8,7 +8,7 @@ TresArt is a handmade art brand focused on selling hand-painted products, specif
 
 ## Core Value
 
-Deliver a high-end, artistic shopping experience that makes hand-painted products feel like collectible art pieces, using a modern and responsive MERN stack (React, Express, MongoDB).
+Deliver a high-end, artistic shopping experience that makes hand-painted products feel like collectible art pieces, using a modern and responsive React, FastAPI, and MongoDB stack.
 
 ## Requirements
 
@@ -34,6 +34,7 @@ Deliver a high-end, artistic shopping experience that makes hand-painted product
 | **WhatsApp Orders** | Simple, no-cost order processing via `wa.me` links. | — Confirmed |
 | **Fixed Pricing** | All tote bags priced at ₹450 for simplicity. | — Confirmed |
 | **JWT Auth** | Secure, stateless authentication for user profiles and carts. | — Confirmed |
+| **FastAPI backend** | Python API with async MongoDB access; legacy Express backend remains available for rollback. | — Implemented; runtime verification pending |
 
 ## Operational Standards
 
@@ -45,6 +46,7 @@ Deliver a high-end, artistic shopping experience that makes hand-painted product
 
 - **2026-05-10**: Milestone 3 initialized — focusing on Core Cart + WhatsApp flow. Removed wishlist and refined order process.
 - **2026-05-10**: Established Global Process Standard for mandatory commits after phase/debug completion.
+- **2026-09-29**: Added a FastAPI backend with auth, product, and cart routes; updated frontend API handling, local development, Jenkins, and setup documentation. API tests (4) and the frontend production build pass; live MongoDB integration is not yet verified.
 
 ---
-*Last updated: 2026-05-10 after Establishing Operational Standards*
+*Last updated: 2026-09-29 after FastAPI migration update*

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 TresArt Dev Server Launcher
-Starts backend (Express) and frontend (Vite/React) simultaneously.
+Starts backend (FastAPI) and frontend (Vite/React) simultaneously.
 Press Ctrl+C to stop both servers.
 """
 
@@ -11,6 +11,7 @@ import sys
 import os
 import signal
 import io
+import socket
 
 # Force UTF-8 output on Windows
 if sys.platform == "win32":
@@ -19,19 +20,28 @@ if sys.platform == "win32":
 
 # ── Config ────────────────────────────────────────────────────────────────────
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FASTAPI_DIR = os.path.join(BASE_DIR, "backend", "fastapi_app")
+VENV_PYTHON = os.path.join(
+    FASTAPI_DIR,
+    "Scripts" if sys.platform == "win32" else "bin",
+    "python.exe" if sys.platform == "win32" else "python",
+)
+BACKEND_PYTHON = VENV_PYTHON if os.path.isfile(VENV_PYTHON) else sys.executable
 
 SERVICES = [
     {
         "name": "BACKEND ",
-        "cwd": os.path.join(BASE_DIR, "backend"),
-        "cmd": ["npm", "run", "dev"],
+        "cwd": FASTAPI_DIR,
+        "cmd": [BACKEND_PYTHON, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", "5000", "--reload"],
         "color": "\033[94m",   # Blue
+        "shell": False,
     },
     {
         "name": "FRONTEND",
         "cwd": os.path.join(BASE_DIR, "frontend"),
         "cmd": ["npm", "run", "dev"],
         "color": "\033[92m",   # Green
+        "shell": sys.platform == "win32",
     },
 ]
 
@@ -72,11 +82,11 @@ def run_service(service: dict) -> None:
             cwd=service["cwd"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            # Windows: run through cmd so npm.cmd resolves
-            shell=(sys.platform == "win32"),
+            # npm.cmd needs cmd on Windows; the Python executable does not.
+            shell=service["shell"],
         )
     except FileNotFoundError:
-        print(f"{pfx}{RED}Error: command not found — is npm installed?{RESET}")
+        print(f"{pfx}{RED}Error: configured runtime command was not found.{RESET}")
         return
 
     with lock:
@@ -89,6 +99,12 @@ def run_service(service: dict) -> None:
         print(f"{pfx}{RED}Exited with code {ret}{RESET}", flush=True)
     else:
         print(f"{pfx}Stopped.", flush=True)
+
+
+def port_in_use(port: int) -> bool:
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+        sock.settimeout(0.5)
+        return sock.connect_ex(("127.0.0.1", port)) == 0
 
 
 def shutdown(signum=None, frame=None) -> None:
@@ -116,6 +132,10 @@ if __name__ == "__main__":
     print(f"  Frontend → {SERVICES[1]['cwd']}")
     print(f"{'─' * 40}")
     print(f"  Press {BOLD}Ctrl+C{RESET} to stop all servers\n")
+
+    if port_in_use(5000):
+        print(f"{BOLD}{YELLOW}Port 5000 is already in use; keeping the existing backend running and starting only the frontend.{RESET}")
+        SERVICES = [svc for svc in SERVICES if svc["name"] != "BACKEND "]
 
     threads = []
     for svc in SERVICES:

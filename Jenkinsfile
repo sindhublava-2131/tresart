@@ -5,19 +5,27 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                bat 'py -3.12 -m venv backend\\fastapi_app\\.venv'
+                bat 'backend\\fastapi_app\\.venv\\Scripts\\python.exe -m pip install -r backend\\fastapi_app\\requirements-dev.txt'
+                bat 'npm --prefix frontend install'
             }
         }
 
         stage('Dependency Check') {
             steps {
-                bat 'npm audit'
+                bat 'npm --prefix frontend audit'
             }
         }
 
-        stage('Build Next.js App') {
+        stage('Test FastAPI Backend') {
             steps {
-                bat 'npm run build'
+                bat 'backend\\fastapi_app\\.venv\\Scripts\\python.exe -m pytest backend\\fastapi_app\\tests'
+            }
+        }
+
+        stage('Build Vite Frontend') {
+            steps {
+                bat 'npm --prefix frontend run build'
             }
         }
 

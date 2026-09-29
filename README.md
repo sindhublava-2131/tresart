@@ -10,7 +10,7 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white" />
-  <img src="https://img.shields.io/badge/Express-5-000000?style=for-the-badge&logo=express&logoColor=white" />
+  <img src="https://img.shields.io/badge/FastAPI-Python-009688?style=for-the-badge&logo=fastapi&logoColor=white" />
   <img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" />
   <img src="https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" />
@@ -75,13 +75,12 @@ We specialize in:
 ### Backend
 | Tech | Role |
 |---|---|
-| **Node.js + Express 5** | REST API server |
-| **MongoDB Atlas** | Cloud database |
-| **Mongoose** | ODM for MongoDB |
-| **bcryptjs** | Password hashing |
-| **JSON Web Tokens** | Auth session management |
-| **dotenv** | Environment config |
-| **nodemon** | Dev hot-reload |
+| **Python + FastAPI** | REST API server |
+| **MongoDB Atlas + PyMongo Async** | Existing cloud database and async driver |
+| **Pydantic Settings** | Request validation and environment config |
+| **bcrypt** | Password hashing compatible with existing hashes |
+| **PyJWT** | Auth session management |
+| **Uvicorn** | ASGI server and development reload |
 
 ---
 
@@ -90,8 +89,11 @@ We specialize in:
 ```
 tresart/
 ├── backend/
+│   ├── fastapi_app/
+│   │   ├── app/                # FastAPI app, routes, schemas, and database setup
+│   │   └── requirements.txt
 │   ├── middleware/
-│   │   └── auth.js            # JWT verification middleware
+│   │   └── auth.js            # Legacy Express JWT middleware
 │   ├── models/
 │   │   ├── User.js            # User schema (cart, address, auth)
 │   │   └── Product.js         # Product schema
@@ -101,7 +103,7 @@ tresart/
 │   │   └── products.js        # Product listing
 │   ├── seed.js                # Initial seed script
 │   ├── seed_new.js            # Updated product seeder
-│   └── server.js              # Express app entry point
+│   └── server.js              # Legacy Express entry point (kept for rollback)
 │
 ├── frontend/
 │   └── src/
@@ -138,7 +140,7 @@ tresart/
 ### Prerequisites
 
 - **Node.js** v18+ — [Download](https://nodejs.org)
-- **Python** 3.8+ — [Download](https://python.org) *(for the launcher)*
+- **Python** 3.12+ — [Download](https://python.org)
 - **MongoDB Atlas** account — [Sign up free](https://www.mongodb.com/cloud/atlas)
 
 ### 1. Clone the Repository
@@ -151,33 +153,30 @@ cd tresart
 ### 2. Install Dependencies
 
 ```bash
-# Backend
-cd backend
-npm install
+# Backend (PowerShell)
+py -3.12 -m venv backend/fastapi_app/.venv
+backend/fastapi_app/.venv/Scripts/python.exe -m pip install -r backend/fastapi_app/requirements.txt
 
 # Frontend
-cd ../frontend
+cd frontend
 npm install
+cd ..
 ```
 
 ### 3. Configure Environment Variables
 
-Create a `.env` file inside the `backend/` directory:
+Copy `backend/.env.example` to `backend/.env`, then set your MongoDB connection string and a private JWT secret:
 
 ```env
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/tresart
-JWT_SECRET=your_super_secret_jwt_key
+JWT_SECRET=<long-random-secret>
+CORS_ORIGINS=http://localhost:5173
 PORT=5000
 ```
 
 > ⚠️ **Never commit your `.env` file.** It's already in `.gitignore`.
 
-### 4. Seed the Database *(Optional)*
-
-```bash
-cd backend
-node seed_new.js
-```
+Do not run the legacy seed scripts against an existing database: `backend/seed_new.js` deletes products and clears users' carts.
 
 ### 5. Start the Dev Servers
 
@@ -192,9 +191,8 @@ This launches both backend and frontend simultaneously with colored, prefixed lo
 #### Option B — Manual (Two Terminals)
 
 ```bash
-# Terminal 1 — Backend
-cd backend
-npm run dev
+# Terminal 1 — Backend (from repository root)
+backend/fastapi_app/.venv/Scripts/python.exe -m uvicorn app.main:app --app-dir backend/fastapi_app --reload --host 127.0.0.1 --port 5000
 
 # Terminal 2 — Frontend
 cd frontend
@@ -208,6 +206,7 @@ npm run dev
 | **Frontend** | http://localhost:5173 |
 | **Backend API** | http://localhost:5000 |
 | **API Health** | http://localhost:5000/ |
+| **Interactive API docs** | http://localhost:5000/docs |
 
 ---
 
@@ -218,22 +217,22 @@ npm run dev
 |---|---|---|
 | `POST` | `/api/auth/register` | Create new account |
 | `POST` | `/api/auth/login` | Login & receive JWT |
-| `GET` | `/api/auth/profile` | Get logged-in user profile |
-| `PUT` | `/api/auth/profile` | Update profile details |
+| `GET` | `/api/auth/me` | Get logged-in user profile |
+| `PUT` | `/api/auth/me` | Update profile details |
 
 ### Products
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/products` | List all products |
-| `GET` | `/api/products/:id` | Get single product |
 
 ### Cart
 | Method | Endpoint | Description |
 |---|---|---|
 | `GET` | `/api/cart` | Get user's cart |
-| `POST` | `/api/cart` | Add item to cart |
-| `PUT` | `/api/cart/:productId` | Update item quantity |
-| `DELETE` | `/api/cart/:productId` | Remove item from cart |
+| `POST` | `/api/cart/add` | Add item to cart |
+| `PUT` | `/api/cart/update` | Update item quantity |
+| `DELETE` | `/api/cart/remove/:productId` | Remove item from cart |
+| `POST` | `/api/cart/clear` | Clear cart |
 
 > 🔒 Cart and Profile endpoints require a valid JWT in the `Authorization: Bearer <token>` header.
 
@@ -251,7 +250,7 @@ npm run dev
 
 ## 🛠️ Development Notes
 
-- The frontend proxies `/api/*` requests to the backend via Vite's dev proxy config.
+- The frontend calls `http://localhost:5000` by default; FastAPI allows the Vite origin through `CORS_ORIGINS`. `VITE_API_URL` overrides the API base URL.
 - If the backend is unreachable, the app gracefully falls back to **mock product data** so the UI remains functional.
 - All images are served from `frontend/public/images/`.
 - The app features an **animated entrance splash screen** on first load.

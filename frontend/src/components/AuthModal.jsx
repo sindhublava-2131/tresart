@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { indianStates, majorCitiesByState } from '../utils/indiaData';
+import { validateIndianPincode } from '../utils/addressValidation';
 
 const AuthModal = ({ isOpen, onClose }) => {
   const [isLogin, setIsLogin] = useState(true);
@@ -63,13 +64,6 @@ const AuthModal = ({ isOpen, onClose }) => {
         return;
       }
 
-      // Validate 6-digit pincode
-      const pincodeRegex = /^[0-9]{6}$/;
-      if (!pincodeRegex.test(cleanPincode)) {
-        setError('Pincode must be exactly 6 digits.');
-        setLoading(false);
-        return;
-      }
     }
 
     let result;
@@ -81,6 +75,13 @@ const AuthModal = ({ isOpen, onClose }) => {
       
       if (formData.city === 'Other' && !finalCity) {
         setError('Please specify your city name.');
+        setLoading(false);
+        return;
+      }
+
+      const pincodeCheck = await validateIndianPincode(cleanPincode, formData.state, finalCity);
+      if (!pincodeCheck.valid) {
+        setError(pincodeCheck.message);
         setLoading(false);
         return;
       }
@@ -210,6 +211,9 @@ const AuthModal = ({ isOpen, onClose }) => {
                     <input 
                       type="text" 
                       required
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      maxLength={6}
                       className="w-full bg-transparent border-b border-[var(--color-border)] py-2 text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] transition-colors text-sm"
                       value={formData.street}
                       onChange={(e) => setFormData({...formData, street: e.target.value})}

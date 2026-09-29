@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { LogOut, User, Settings, Edit3, Save, X, Phone, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { indianStates, majorCitiesByState } from '../utils/indiaData';
+import { validateIndianPincode } from '../utils/addressValidation';
 
 const UserProfile = () => {
   const { user, logout, updateProfile } = useAuth();
@@ -52,24 +53,22 @@ const UserProfile = () => {
       return;
     }
 
-    // Validate 6-digit pincode
-    const pincodeRegex = /^[0-9]{6}$/;
-    if (!pincodeRegex.test(formData.pincode)) {
-      alert('Please include a valid 6-digit pincode.');
+    const cityToUse = formData.city === 'Other' ? formData.otherCity.trim() : formData.city;
+    if (!cityToUse) {
+      alert('Please specify your city name.');
       return;
     }
 
     setLoading(true);
-    const { otherCity, ...updateData } = {
-      ...formData,
-      city: formData.city === 'Other' ? formData.otherCity : formData.city
-    };
-
-    if (formData.city === 'Other' && !formData.otherCity) {
-      alert('Please specify your city name.');
+    const pincodeCheck = await validateIndianPincode(formData.pincode, formData.state, cityToUse);
+    if (!pincodeCheck.valid) {
+      alert(pincodeCheck.message);
       setLoading(false);
       return;
     }
+
+    const updateData = { ...formData, city: cityToUse };
+    delete updateData.otherCity;
 
     const result = await updateProfile(updateData);
     setLoading(false);
@@ -268,6 +267,9 @@ const UserProfile = () => {
                         {isEditing ? (
                           <input 
                             type="text"
+                            inputMode="numeric"
+                            autoComplete="postal-code"
+                            maxLength={6}
                             value={formData.pincode}
                             onChange={(e) => setFormData({...formData, pincode: e.target.value})}
                             className="w-full bg-transparent border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] outline-none transition-colors"

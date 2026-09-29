@@ -13,6 +13,113 @@ import About from './components/About';
 import { useAuth } from './context/AuthContext';
 import { Instagram, Youtube } from './components/SocialIcons';
 
+const FALLBACK_PRODUCTS = [
+  {
+    _id: "mock1",
+    name: "Cartoon Classic Pouch",
+    price: 120,
+    description: "Hand-painted classic cartoon pouch.",
+    imageURL: "/images/cartoon1.png",
+    category: "Pouches"
+  },
+  {
+    _id: "mock2",
+    name: "Cartoon Fun Pouch",
+    price: 120,
+    description: "Fun and vibrant cartoon art pouch.",
+    imageURL: "/images/cartoon2.png",
+    category: "Pouches"
+  },
+  {
+    _id: "mock3",
+    name: "Cartoon Adventure Pouch",
+    price: 120,
+    description: "Adventure themed cartoon pouch.",
+    imageURL: "/images/cartoon3.png",
+    category: "Pouches"
+  },
+  {
+    _id: "mock4",
+    name: "Beauty Art Pouch",
+    price: 120,
+    description: "Minimalist beauty line art pouch.",
+    imageURL: "/images/beauty.png",
+    category: "Pouches"
+  },
+  {
+    _id: "mock5",
+    name: "Girl Power Tote",
+    price: 500,
+    description: "Minimalist girl portrait tote.",
+    imageURL: "/images/girl.png",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock6",
+    name: "Anime Friends Tote",
+    price: 500,
+    description: "Anime style friends art tote.",
+    imageURL: "/images/frnds1.jpg",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock7",
+    name: "Combo Pack Tote",
+    price: 500,
+    description: "Tote and pouch combo.",
+    imageURL: "/images/combo.jpg",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock8",
+    name: "Evil Eye Tote",
+    price: 500,
+    description: "Protective evil eye design tote.",
+    imageURL: "/images/evil eye.png",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock9",
+    name: "Indian Heritage Tote",
+    price: 550,
+    description: "Hand-painted black tote featuring traditional Indian anklet and ghungroo art.",
+    imageURL: "/images/black anklet tote.png",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock10",
+    name: "Flower Art Tote",
+    price: 500,
+    description: "Beautiful flower art tote.",
+    imageURL: "/images/flower.png",
+    category: "Tote Bags"
+  },
+  {
+    _id: "mock11",
+    name: "Gift Special Pouch",
+    price: 150,
+    description: "Perfect for gifting pouch.",
+    imageURL: "/images/gifting.png",
+    category: "Gifting"
+  },
+  {
+    _id: "mock12",
+    name: "Premium Gift Tote",
+    price: 500,
+    description: "Premium gifting tote option.",
+    imageURL: "/images/gifting1.png",
+    category: "Gifting"
+  },
+  {
+    _id: "mock13",
+    name: "Combo Deluxe",
+    price: 2500,
+    description: "Deluxe combo set.",
+    imageURL: "/images/combo1.jpg",
+    category: "Gifting"
+  }
+];
+
 function App() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,123 +152,31 @@ function App() {
   
   useEffect(() => {
     const fetchProducts = async () => {
-      try {
-        const response = await axios.get('/api/products');
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Failed to fetch products, using mock data:", error);
-        setProducts([
-          {
-            _id: "mock1",
-            name: "Cartoon Classic Pouch",
-            price: 120,
-            description: "Hand-painted classic cartoon pouch.",
-            imageURL: "/images/cartoon1.png",
-            category: "Pouches"
-          },
-          {
-            _id: "mock2",
-            name: "Cartoon Fun Pouch",
-            price: 120,
-            description: "Fun and vibrant cartoon art pouch.",
-            imageURL: "/images/cartoon2.png",
-            category: "Pouches"
-          },
-          {
-            _id: "mock3",
-            name: "Cartoon Adventure Pouch",
-            price: 120,
-            description: "Adventure themed cartoon pouch.",
-            imageURL: "/images/cartoon3.png",
-            category: "Pouches"
-          },
-          {
-            _id: "mock4",
-            name: "Beauty Art Pouch",
-            price: 120,
-            description: "Minimalist beauty line art pouch.",
-            imageURL: "/images/beauty.png",
-            category: "Pouches"
-          },
-          {
-            _id: "mock5",
-            name: "Girl Power Tote",
-            price: 500,
-            description: "Minimalist girl portrait tote.",
-            imageURL: "/images/girl.png",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock6",
-            name: "Anime Friends Tote",
-            price: 500,
-            description: "Anime style friends art tote.",
-            imageURL: "/images/frnds1.jpg",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock7",
-            name: "Combo Pack Tote",
-            price: 500,
-            description: "Tote and pouch combo.",
-            imageURL: "/images/combo.jpg",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock8",
-            name: "Evil Eye Tote",
-            price: 500,
-            description: "Protective evil eye design tote.",
-            imageURL: "/images/evil eye.png",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock9",
-            name: "Indian Heritage Tote",
-            price: 550,
-            description: "Hand-painted black tote featuring traditional Indian anklet and ghungroo art.",
-            imageURL: "/images/black anklet tote.png",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock10",
-            name: "Flower Art Tote",
-            price: 500,
-            description: "Beautiful flower art tote.",
-            imageURL: "/images/flower.png",
-            category: "Tote Bags"
-          },
-          {
-            _id: "mock11",
-            name: "Gift Special Pouch",
-            price: 150,
-            description: "Perfect for gifting pouch.",
-            imageURL: "/images/gifting.png",
-            category: "Gifting"
-          },
-          {
-            _id: "mock12",
-            name: "Premium Gift Tote",
-            price: 500,
-            description: "Premium gifting tote option.",
-            imageURL: "/images/gifting1.png",
-            category: "Gifting"
-          },
-          {
-            _id: "mock13",
-            name: "Combo Deluxe",
-            price: 2500,
-            description: "Deluxe combo set.",
-            imageURL: "/images/combo1.jpg",
-            category: "Gifting"
+      const maxAttempts = 4;
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
+        try {
+          const response = await axios.get('/api/products');
+          const data = Array.isArray(response.data) ? response.data : [];
+
+          if (data.length > 0) {
+            setProducts(data);
+            return;
           }
-        ]);
-      } finally {
-        setLoading(false);
+        } catch (error) {
+          console.warn(`Product fetch attempt ${attempt}/${maxAttempts} failed`, error);
+        }
+
+        if (attempt < maxAttempts) {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
       }
+
+      console.warn('Using fallback product catalog because the API did not return data.');
+      setProducts(FALLBACK_PRODUCTS);
     };
 
-    fetchProducts();
+    fetchProducts().finally(() => setLoading(false));
   }, []);
 
   const handleEnter = () => {

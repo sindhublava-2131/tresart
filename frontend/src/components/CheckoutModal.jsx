@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageCircle } from 'lucide-react';
+import { X, MessageCircle, Loader2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { indianStates, majorCitiesByState } from '../utils/indiaData';
+import { validateIndianPincode } from '../utils/addressValidation';
 
 const CheckoutModal = ({ isOpen, onClose }) => {
   const { user } = useAuth();
   const { cart, cartTotal, clearCart } = useCart();
+  const [isVerifyingPincode, setIsVerifyingPincode] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -34,8 +36,9 @@ const CheckoutModal = ({ isOpen, onClose }) => {
     }
   }, [user, isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (isVerifyingPincode) return;
 
     // Validate phone number (exactly 10 digits)
     const phoneRegex = /^[0-9]{10}$/;
@@ -50,19 +53,20 @@ const CheckoutModal = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Validate 6-digit pincode
-    const pincodeRegex = /^[0-9]{6}$/;
-    if (!pincodeRegex.test(formData.pincode)) {
-      alert('Pincode must be exactly 6 digits.');
-      return;
-    }
-
     if (formData.city === 'Other' && !formData.otherCity) {
       alert('Please specify your city name.');
       return;
     }
 
     const cityToUse = formData.city === 'Other' ? formData.otherCity : formData.city;
+    setIsVerifyingPincode(true);
+    const pincodeCheck = await validateIndianPincode(formData.pincode, formData.state, cityToUse);
+    setIsVerifyingPincode(false);
+    if (!pincodeCheck.valid) {
+      alert(pincodeCheck.message);
+      return;
+    }
+
     const fullAddress = `${formData.street}, ${formData.landmark ? formData.landmark + ', ' : ''}${cityToUse}, ${formData.state} - ${formData.pincode}`;
 
     // Format WhatsApp message
@@ -94,7 +98,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[200] flex items-center justify-center overflow-y-auto p-3 sm:p-5">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -107,7 +111,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.9, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            className="relative w-full max-w-lg bg-[var(--color-bg-primary)] border border-[var(--color-border)] rounded-sm shadow-2xl p-8 overflow-hidden"
+            className="relative flex max-h-[calc(100dvh-1.5rem)] w-full max-w-xl flex-col overflow-hidden rounded-sm border border-[var(--color-border)] bg-[var(--color-bg-primary)] p-5 shadow-2xl sm:max-h-[calc(100dvh-2.5rem)] sm:p-7"
           >
             <button 
               onClick={onClose}
@@ -116,12 +120,13 @@ const CheckoutModal = ({ isOpen, onClose }) => {
               <X size={20} />
             </button>
 
-            <div className="mb-8">
+            <div className="mb-5 shrink-0 pr-10 sm:mb-6">
               <h2 className="text-3xl font-serif tracking-tight">Delivery Details</h2>
               <p className="text-[var(--color-text-primary)]/40 mt-2 text-sm uppercase tracking-widest">Complete your order via WhatsApp</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
+              <div className="min-h-0 flex-1 space-y-5 overflow-y-auto pr-2 custom-scrollbar">
               <div className="space-y-2">
                 <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Full Name</label>
                 <input
@@ -146,7 +151,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                 />
               </div>
 
-              <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">Street / House No.</label>
                   <input
@@ -170,7 +175,7 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
                   <div className="space-y-2">
                     <label className="text-xs uppercase tracking-[0.2em] text-[var(--color-text-primary)]/60">State</label>
                     <select
@@ -226,6 +231,9 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                   <input
                     required
                     type="text"
+                    inputMode="numeric"
+                    autoComplete="postal-code"
+                    maxLength={6}
                     value={formData.pincode}
                     onChange={(e) => setFormData({...formData, pincode: e.target.value})}
                     className="w-full bg-[var(--color-bg-primary)] border-b border-[var(--color-border)] py-2 focus:border-[var(--color-accent)] transition-colors outline-none text-lg"
@@ -233,18 +241,21 @@ const CheckoutModal = ({ isOpen, onClose }) => {
                 </div>
               </div>
 
-              <div className="pt-6">
-                <div className="flex justify-between items-end mb-6">
+              </div>
+
+              <div className="shrink-0 border-t border-[var(--color-border)] bg-[var(--color-bg-primary)] pt-4">
+                <div className="mb-3 flex items-end justify-between">
                   <span className="text-[var(--color-text-primary)]/40 uppercase tracking-widest text-xs">Total Amount</span>
-                  <span className="text-3xl font-serif">₹{cartTotal.toLocaleString()}</span>
+                  <span className="text-2xl font-serif">₹{cartTotal.toLocaleString()}</span>
                 </div>
                 
                 <button
                   type="submit"
-                  className="w-full py-5 bg-[var(--color-accent)] text-white font-medium uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-3 hover:bg-red-600 transition-colors group shadow-lg"
+                  disabled={isVerifyingPincode}
+                  className="w-full py-4 bg-[var(--color-accent)] text-white font-medium uppercase tracking-[0.3em] text-xs flex items-center justify-center gap-3 hover:bg-red-600 disabled:opacity-60 transition-colors group shadow-lg"
                 >
-                  <MessageCircle size={18} className="group-hover:scale-110 transition-transform" />
-                  Send Order via WhatsApp
+                  {isVerifyingPincode ? <Loader2 size={18} className="animate-spin" /> : <MessageCircle size={18} className="group-hover:scale-110 transition-transform" />}
+                  {isVerifyingPincode ? 'Verifying PIN Code...' : 'Send Order via WhatsApp'}
                 </button>
                 <p className="text-[var(--color-text-primary)]/30 text-[10px] uppercase tracking-widest text-center mt-4">
                   Secure checkout • Redirects to official WhatsApp
